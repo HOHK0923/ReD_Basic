@@ -1,0 +1,42 @@
+MIT License
+
+Copyright (c) 2025 황준하 (Hwang Junha)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+
+---
+
+## ⚠️ 면책 조항 (Disclaimer)
+
+본 프로젝트는 **교육 및 연구 목적으로만** 제작되었습니다.
+
+### 허가된 사용
+- 자신이 소유하거나 명시적으로 허가받은 시스템에서만 사용
+- 보안 교육 및 침투 테스트 연구
+- 방어 메커니즘 연구 및 개발
+
+### 금지된 사용
+- 무단으로 타인의 시스템에 대한 공격
+- 불법적인 침입 또는 데이터 탈취
+- 상업적 악용
+
+### 법적 책임
+- 사용자는 관련 법률을 준수할 책임이 있습니다
+- 저작자는 본 소프트웨어의 오용에 대해 책임지지 않습니다
+- 한국 정보통신망법, 전자금융거래법 등을 위반 시 최대 10년 이하 징역에 처해질 수 있습니다
