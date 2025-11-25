@@ -647,11 +647,13 @@ Linux: 04_Privilege_Escalation/privesc_enum.py 실행
         """Persistence 백도어 설치 (Red Team 시뮬레이션) - SSH 불필요!
 
 사용법:
-    persist webshell  - 웹쉘을 통한 백도어 설치 (추천, SSH 불필요)
-    persist ssm       - AWS SSM을 통한 백도어 설치 (SSH 불필요)
-    persist ssh       - SSH를 통한 백도어 설치 (레거시)
-    persist cleanup   - 모든 백도어 제거
-    persist info      - 백도어 정보 표시
+    persist aggressive  - 🔥 공격적 백도어 (ALL-IN-ONE, 추천!) 🔥
+    persist webshell    - 웹쉘을 통한 백도어 설치 (SSH 불필요)
+    persist php         - PHP 전용 백도어 (www-data 권한)
+    persist ssm         - AWS SSM을 통한 백도어 설치 (SSH 불필요)
+    persist ssh         - SSH를 통한 백도어 설치 (레거시)
+    persist cleanup     - 모든 백도어 제거
+    persist info        - 백도어 정보 표시
 
 경고: 승인된 레드팀 시뮬레이션 환경에서만 사용하세요!
 """
@@ -660,7 +662,69 @@ Linux: 04_Privilege_Escalation/privesc_enum.py 실행
             return
 
         # 방식 선택
-        if arg == 'webshell':
+        if arg == 'aggressive':
+            # 공격적 백도어 - 모든 방법 시도
+            script_path = self.project_root / '03_Persistence' / 'aggressive_backdoor.py'
+
+            if not script_path.exists():
+                print(f"{Colors.FAIL}[-] 스크립트를 찾을 수 없습니다: {script_path}{Colors.ENDC}")
+                return
+
+            print(f"\n{Colors.RED}╔{'═'*68}╗{Colors.ENDC}")
+            print(f"{Colors.RED}║{Colors.BOLD}{Colors.YELLOW}  🔥 공격적 백도어 설치 - ALL-IN-ONE 🔥{Colors.ENDC}{' '*27}{Colors.RED}║{Colors.ENDC}")
+            print(f"{Colors.RED}╚{'═'*68}╝{Colors.ENDC}\n")
+
+            print(f"{Colors.RED}[!] 이 명령어는 가능한 모든 백도어를 시도합니다:{Colors.ENDC}")
+            print(f"    {Colors.YELLOW}✓{Colors.ENDC} PHP 웹쉘 (7개 위치)")
+            print(f"    {Colors.YELLOW}✓{Colors.ENDC} 시스템 사용자")
+            print(f"    {Colors.YELLOW}✓{Colors.ENDC} SSH 키 백도어")
+            print(f"    {Colors.YELLOW}✓{Colors.ENDC} Cron 작업")
+            print(f"    {Colors.YELLOW}✓{Colors.ENDC} .htaccess 백도어")
+            print(f"    {Colors.YELLOW}✓{Colors.ENDC} 이미지 위장 웹쉘")
+            print(f"    {Colors.YELLOW}✓{Colors.ENDC} PHP auto_prepend")
+            print(f"    {Colors.YELLOW}✓{Colors.ENDC} 로그 파일 포이즈닝")
+            print(f"    {Colors.YELLOW}✓{Colors.ENDC} 리버스 쉘 스크립트")
+            print(f"\n{Colors.RED}[!] 승인된 레드팀 시뮬레이션 환경에서만 사용하세요!{Colors.ENDC}\n")
+
+            confirm = input(f"{Colors.YELLOW}전면 공격을 시작하시겠습니까? (yes/no): {Colors.ENDC}")
+            if confirm.lower() != 'yes':
+                print(f"{Colors.FAIL}[-] 취소됨{Colors.ENDC}")
+                return
+
+            print()
+            with Loader(desc=f"{Colors.RED}Loading aggressive backdoor module...{Colors.ENDC}",
+                       end=f"{Colors.GREEN}Module loaded - Attack initiated!{Colors.ENDC}"):
+                time.sleep(1)
+
+            tor_flag = "--tor" if self.use_tor else ""
+            cmd = f"python3 {script_path} {self.target} {tor_flag}"
+            print(f"{Colors.GRAY}[cmd]{Colors.ENDC} {cmd}\n")
+            os.system(cmd)
+            return
+
+        elif arg == 'php':
+            # PHP 전용 백도어
+            script_path = self.project_root / '03_Persistence' / 'php_only_backdoor.py'
+
+            if not script_path.exists():
+                print(f"{Colors.FAIL}[-] 스크립트를 찾을 수 없습니다: {script_path}{Colors.ENDC}")
+                return
+
+            print(f"{Colors.WARNING}[!] PHP 전용 백도어 설치 (www-data 권한){Colors.ENDC}")
+            print(f"{Colors.FAIL}[!] 승인된 레드팀 시뮬레이션 환경에서만 사용하세요!{Colors.ENDC}\n")
+
+            confirm = input(f"{Colors.WARNING}계속하시겠습니까? (yes/no): {Colors.ENDC}")
+            if confirm.lower() != 'yes':
+                print(f"{Colors.FAIL}[-] 취소됨{Colors.ENDC}")
+                return
+
+            tor_flag = "--tor" if self.use_tor else ""
+            cmd = f"python3 {script_path} {self.target} {tor_flag}"
+            print(f"{Colors.OKCYAN}[*] 실행 중: {cmd}{Colors.ENDC}\n")
+            os.system(cmd)
+            return
+
+        elif arg == 'webshell':
             # 웹쉘 기반 백도어 (SSH 불필요)
             script_path = self.project_root / '03_Persistence' / 'webshell_backdoor.py'
 
