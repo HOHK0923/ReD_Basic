@@ -1,0 +1,8 @@
+bf2025.php, secrue_login.php를 서버 경로로 복사
+monitor.py를 실행
+# monitor.py => bf2025.php, secure_login.php에서 입력받은 id, password 로깅
+blackfriday.txt, security.txt에 있는 글을 타겟 사이트 new_post.php에서 게시
+사용자가 bf2025.php, secure_login.php의 링크 클릭 (phishing)
+링크 클릭 후 php 페이지에서 id, password 입력
+monitor.py에서 로깅된 id, password 확인, stolen_creds.txt 파일도 생성(로깅)
+ID, Password 탈취
