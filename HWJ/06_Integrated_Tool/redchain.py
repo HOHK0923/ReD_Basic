@@ -97,34 +97,16 @@ def progress_bar(iteration, total, prefix='', suffix='', length=40):
 # ASCII 아트 배너
 def print_banner():
     banner = f"""
-{Colors.CYAN}╔═══════════════════════════════════════════════════════════════════════╗
-║  {Colors.RED}██████{Colors.YELLOW}╗ {Colors.RED}███████{Colors.YELLOW}╗{Colors.GREEN}██████{Colors.CYAN}╗  {Colors.GREEN}█████{Colors.BLUE}╗{Colors.GREEN}██{Colors.CYAN}╗  {Colors.GREEN}██{Colors.BLUE}╗ {Colors.MAGENTA}█████{Colors.RED}╗ {Colors.YELLOW}██{Colors.GREEN}╗{Colors.CYAN}███{Colors.BLUE}╗   {Colors.MAGENTA}██{Colors.RED}╗{Colors.CYAN}  ║
-║  {Colors.RED}██{Colors.YELLOW}╔══{Colors.RED}██{Colors.YELLOW}╗{Colors.RED}██{Colors.YELLOW}╔════╝{Colors.GREEN}██{Colors.CYAN}╔══{Colors.GREEN}██{Colors.CYAN}╗{Colors.GREEN}██{Colors.BLUE}╔══{Colors.GREEN}██{Colors.BLUE}╗{Colors.GREEN}██{Colors.CYAN}║  {Colors.GREEN}██{Colors.BLUE}║{Colors.MAGENTA}██{Colors.RED}╔══{Colors.MAGENTA}██{Colors.RED}╗{Colors.YELLOW}██{Colors.GREEN}║{Colors.CYAN}████{Colors.BLUE}╗  {Colors.MAGENTA}██{Colors.RED}║{Colors.CYAN}  ║
-║  {Colors.RED}██████{Colors.YELLOW}╔╝{Colors.RED}█████{Colors.YELLOW}╗  {Colors.GREEN}██{Colors.CYAN}║  {Colors.GREEN}██{Colors.CYAN}║{Colors.GREEN}██{Colors.BLUE}║  {Colors.GREEN}██{Colors.BLUE}║{Colors.GREEN}███████{Colors.BLUE}║{Colors.MAGENTA}███████{Colors.RED}║{Colors.YELLOW}██{Colors.GREEN}║{Colors.CYAN}██{Colors.BLUE}╔{Colors.CYAN}██{Colors.BLUE}╗ {Colors.MAGENTA}██{Colors.RED}║{Colors.CYAN}  ║
-║  {Colors.RED}██{Colors.YELLOW}╔══{Colors.RED}██{Colors.YELLOW}╗{Colors.RED}██{Colors.YELLOW}╔══╝  {Colors.GREEN}██{Colors.CYAN}║  {Colors.GREEN}██{Colors.CYAN}║{Colors.GREEN}██{Colors.BLUE}║  {Colors.GREEN}██{Colors.BLUE}║{Colors.GREEN}██{Colors.CYAN}╔══{Colors.GREEN}██{Colors.BLUE}║{Colors.MAGENTA}██{Colors.RED}╔══{Colors.MAGENTA}██{Colors.RED}║{Colors.YELLOW}██{Colors.GREEN}║{Colors.CYAN}██{Colors.BLUE}║╚{Colors.CYAN}██{Colors.BLUE}╗{Colors.MAGENTA}██{Colors.RED}║{Colors.CYAN}  ║
-║  {Colors.RED}██{Colors.YELLOW}║  {Colors.RED}██{Colors.YELLOW}║{Colors.RED}███████{Colors.YELLOW}╗{Colors.GREEN}██████{Colors.CYAN}╔╝{Colors.GREEN}╚{Colors.BLUE}█████{Colors.GREEN}╔╝{Colors.GREEN}██{Colors.CYAN}║  {Colors.GREEN}██{Colors.BLUE}║{Colors.MAGENTA}██{Colors.RED}║  {Colors.MAGENTA}██{Colors.RED}║{Colors.YELLOW}██{Colors.GREEN}║{Colors.CYAN}██{Colors.BLUE}║ ╚{Colors.CYAN}███{Colors.MAGENTA}██{Colors.RED}║{Colors.CYAN}  ║
-║  {Colors.GRAY}╚═╝  ╚═╝╚══════╝╚═════╝  ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝{Colors.CYAN}  ║
-║                                                                       ║
-║           {Colors.BOLD}{Colors.WHITE}Cloud Security Penetration Testing Framework{Colors.ENDC}{Colors.CYAN}            ║
-║                    {Colors.YELLOW}⚡ Powered by AI • v2.5 ⚡{Colors.CYAN}                      ║
-╚═══════════════════════════════════════════════════════════════════════╝{Colors.ENDC}
+{Colors.RED}    ____           _______{Colors.ENDC}     {Colors.FAIL}___{Colors.ENDC}       {Colors.WARNING}__{Colors.ENDC}      {Colors.GREEN}_{Colors.ENDC}      {Colors.CYAN}_{Colors.ENDC}
+{Colors.RED}   / __ \\___  ____/ / ___/{Colors.ENDC}{Colors.FAIL}/ /_  {Colors.ENDC}   {Colors.WARNING}___{Colors.ENDC} / /_____{Colors.GREEN}(_)___{Colors.ENDC}  {Colors.CYAN}/ /_{Colors.ENDC}
+{Colors.RED}  / /_/ / _ \\/ _  / /    {Colors.ENDC}{Colors.FAIL} __ \\ {Colors.ENDC}  {Colors.WARNING}/ _ `/{Colors.ENDC}  {Colors.WARNING}__{Colors.ENDC}_{Colors.GREEN}/ __ \\{Colors.ENDC} {Colors.CYAN}  __/{Colors.ENDC}
+{Colors.RED} / _, _/  __/ /_/ / /___ {Colors.ENDC}{Colors.FAIL} / / /{Colors.ENDC}  {Colors.WARNING}/ //{Colors.ENDC}_{Colors.WARNING}/ /_{Colors.ENDC} {Colors.GREEN}/ / / /{Colors.ENDC}{Colors.CYAN} /__{Colors.ENDC}
+{Colors.RED}/_/ |_|\\___/\\__,_/\\____/{Colors.ENDC}{Colors.FAIL}_/ /_/{Colors.ENDC}   {Colors.WARNING}\\__,_/\\___{Colors.ENDC}{Colors.GREEN}/_/ /_/{Colors.ENDC}{Colors.CYAN}\\__/{Colors.ENDC}
+
+{Colors.BOLD}{Colors.WHITE}[ AWS Cloud Penetration Testing Framework ]{Colors.ENDC}
+{Colors.GRAY}[ Version 2.6 | Build 20251126 | by HWJ ]{Colors.ENDC}
     """
     print(banner)
-
-    # 애니메이션 효과
-    messages = [
-        (Colors.CYAN, "🔍", "Initializing reconnaissance modules"),
-        (Colors.GREEN, "🚀", "Loading AWS exploit chains"),
-        (Colors.YELLOW, "⚙️ ", "Configuring persistence engines"),
-        (Colors.MAGENTA, "🎯", "Ready for deployment")
-    ]
-
-    for color, icon, msg in messages:
-        sys.stdout.write(f"{color}{icon}  {msg}...{Colors.ENDC}")
-        sys.stdout.flush()
-        time.sleep(0.3)
-        sys.stdout.write(f" {Colors.GREEN}✓{Colors.ENDC}\n")
-        time.sleep(0.1)
 
 class RedChainCLI(cmd.Cmd):
     intro = ""  # Will be set in __init__ with dynamic banner
@@ -163,11 +145,8 @@ class RedChainCLI(cmd.Cmd):
             self.project_root = script_dir
 
         # 시작 메시지
-        print(f"\n{Colors.GRAY}┌─────────────────────────────────────────────────────────────┐{Colors.ENDC}")
-        print(f"{Colors.GRAY}│{Colors.ENDC} {Colors.CYAN}Type {Colors.WHITE}help{Colors.CYAN} or {Colors.WHITE}?{Colors.CYAN} to see available commands{Colors.ENDC}              {Colors.GRAY}│{Colors.ENDC}")
-        print(f"{Colors.GRAY}│{Colors.ENDC} {Colors.CYAN}Type {Colors.WHITE}help <command>{Colors.CYAN} for detailed information{Colors.ENDC}           {Colors.GRAY}│{Colors.ENDC}")
-        print(f"{Colors.GRAY}│{Colors.ENDC} {Colors.CYAN}Type {Colors.WHITE}exit{Colors.CYAN} or {Colors.WHITE}quit{Colors.CYAN} to terminate the session{Colors.ENDC}          {Colors.GRAY}│{Colors.ENDC}")
-        print(f"{Colors.GRAY}└─────────────────────────────────────────────────────────────┘{Colors.ENDC}\n")
+        print(f"\n{Colors.GRAY}[i] Type 'help' for commands | 'exit' to quit{Colors.ENDC}")
+        print(f"{Colors.GRAY}[i] Target: {Colors.WHITE}Not set{Colors.GRAY} (use 'set target <ip>'){Colors.ENDC}\n")
 
     def load_config(self):
         """설정 파일 로드"""
@@ -193,11 +172,11 @@ class RedChainCLI(cmd.Cmd):
         if self.target:
             target_display = f"{Colors.GREEN}{self.target}{Colors.ENDC}"
         else:
-            target_display = f"{Colors.RED}no-target{Colors.ENDC}"
+            target_display = f"{Colors.RED}none{Colors.ENDC}"
 
-        tor_display = f" {Colors.YELLOW}🧅{Colors.ENDC}" if self.use_tor else ""
+        tor_display = f"{Colors.YELLOW}[tor]{Colors.ENDC}" if self.use_tor else ""
 
-        self.prompt = f'{Colors.BOLD}{Colors.RED}┌─[{Colors.CYAN}redchain{Colors.RED}@{target_display}{tor_display}{Colors.RED}]{Colors.ENDC}\n{Colors.BOLD}{Colors.RED}└──╼ {Colors.WHITE}${Colors.ENDC} '
+        self.prompt = f'{Colors.FAIL}redchain{Colors.ENDC}({target_display}){tor_display} > '
 
     # ==================== 설정 명령어 ====================
 
@@ -954,6 +933,7 @@ Linux: 04_Privilege_Escalation/privesc_enum.py 실행
         """자동 공격 체인 실행
 
 사용법:
+    auto redteam   - 🔥 완전 자동 레드팀 침투 (추천!) 🔥
     auto recon     - 정찰만 (포트스캔 + 엔드포인트 탐색)
     auto exploit   - 전체 공격 체인 (IMDS → 권한상승 → 변조)
     auto full      - 정찰 + 공격 전체
@@ -962,6 +942,45 @@ Linux: 04_Privilege_Escalation/privesc_enum.py 실행
 """
         if not self.target:
             print(f"{Colors.FAIL}[-] 타겟이 설정되지 않았습니다.{Colors.ENDC}")
+            return
+
+        if arg == 'redteam':
+            # 완전 자동 레드팀 침투
+            script_path = self.project_root / '06_Integrated_Tool' / 'auto_redteam.py'
+
+            if not script_path.exists():
+                print(f"{Colors.FAIL}[-] 스크립트를 찾을 수 없습니다: {script_path}{Colors.ENDC}")
+                return
+
+            print(f"\n{Colors.RED}╔{'═'*68}╗{Colors.ENDC}")
+            print(f"{Colors.RED}║{Colors.BOLD}{Colors.YELLOW}  🔥 레드팀 완전 자동 침투 시작 🔥{Colors.ENDC}{' '*29}{Colors.RED}║{Colors.ENDC}")
+            print(f"{Colors.RED}╚{'═'*68}╝{Colors.ENDC}\n")
+
+            print(f"{Colors.CYAN}[*] 시나리오:{Colors.ENDC}")
+            print(f"    {Colors.GREEN}1.{Colors.ENDC} 웹쉘 작동 확인")
+            print(f"    {Colors.GREEN}2.{Colors.ENDC} SSH 키 생성")
+            print(f"    {Colors.GREEN}3.{Colors.ENDC} 웹쉘로 SSH 백도어 설치 (원격)")
+            print(f"    {Colors.GREEN}4.{Colors.ENDC} SSH 접속 테스트")
+            print(f"    {Colors.GREEN}5.{Colors.ENDC} 권한 상승 시도")
+            print(f"    {Colors.GREEN}6.{Colors.ENDC} Persistence 백도어 설치")
+            print(f"    {Colors.GREEN}7.{Colors.ENDC} Cron 백도어 설치")
+            print(f"    {Colors.GREEN}8.{Colors.ENDC} 웹쉘 백도어 설치")
+            print(f"    {Colors.GREEN}9.{Colors.ENDC} 대화형 SSH 쉘")
+            print()
+
+            confirm = input(f"{Colors.YELLOW}완전 자동 침투를 시작하시겠습니까? (yes/no): {Colors.ENDC}")
+            if confirm.lower() != 'yes':
+                print(f"{Colors.FAIL}[-] 취소됨{Colors.ENDC}")
+                return
+
+            print()
+            with Loader(desc=f"{Colors.RED}Initializing RedTeam automation module...{Colors.ENDC}",
+                       end=f"{Colors.GREEN}Module loaded - Full automation started!{Colors.ENDC}"):
+                time.sleep(1)
+
+            cmd = f"python3 {script_path} {self.target}"
+            print(f"{Colors.GRAY}[cmd]{Colors.ENDC} {cmd}\n")
+            os.system(cmd)
             return
 
         print(f"{Colors.WARNING}{'='*60}{Colors.ENDC}")
@@ -1034,33 +1053,16 @@ def main():
     """메인 함수"""
     # 면책 조항
     print(f"""
-{Colors.YELLOW}╔{'═'*68}╗{Colors.ENDC}
-{Colors.YELLOW}║{Colors.BOLD}{Colors.RED}                          ⚠  LEGAL NOTICE  ⚠{Colors.ENDC}{' '*26}{Colors.YELLOW}║{Colors.ENDC}
-{Colors.YELLOW}╚{'═'*68}╝{Colors.ENDC}
+{Colors.RED}[!] WARNING: For authorized penetration testing only{Colors.ENDC}
+{Colors.GRAY}    Unauthorized access is illegal (Information Network Act){Colors.ENDC}
+{Colors.GRAY}    This tool is for educational/research purposes{Colors.ENDC}
 
-{Colors.WHITE}This tool is for {Colors.BOLD}EDUCATIONAL and RESEARCH purposes ONLY{Colors.ENDC}
-{Colors.WHITE}Unauthorized use against systems you don't own is {Colors.RED}ILLEGAL{Colors.ENDC}
-
-{Colors.CYAN}✓{Colors.ENDC} Only use in authorized penetration testing environments
-{Colors.CYAN}✓{Colors.ENDC} Never use on production systems without explicit permission
-{Colors.CYAN}✓{Colors.ENDC} Unauthorized access may result in legal prosecution
-
-{Colors.GRAY}Related Laws (South Korea):{Colors.ENDC}
-{Colors.YELLOW}•{Colors.ENDC} Information and Communications Network Act: {Colors.RED}Up to 5 years imprisonment{Colors.ENDC}
-{Colors.YELLOW}•{Colors.ENDC} Electronic Financial Transactions Act: {Colors.RED}Up to 10 years imprisonment{Colors.ENDC}
-
-{Colors.BOLD}{Colors.WHITE}Do you accept these terms and confirm authorized use? (yes/no):{Colors.ENDC} """, end='')
+{Colors.WHITE}Accept terms? (yes/no):{Colors.ENDC} """, end='')
 
     consent = input().strip().lower()
     if consent != 'yes':
-        print(f"\n{Colors.RED}✗ Terminated{Colors.ENDC}\n")
+        print(f"{Colors.RED}[x] Aborted{Colors.ENDC}\n")
         sys.exit(0)
-
-    print()
-    with Loader(desc=f"{Colors.CYAN}Initializing RedChain framework...{Colors.ENDC}",
-               end=f"{Colors.GREEN}Framework initialized{Colors.ENDC}"):
-        time.sleep(0.8)
-    print()
 
     # CLI 시작
     cli = RedChainCLI()
