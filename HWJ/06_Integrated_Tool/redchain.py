@@ -439,16 +439,9 @@ class RedChainCLI(cmd.Cmd):
             print(f"{Colors.FAIL}[-] 스크립트를 찾을 수 없습니다: {script_path}{Colors.ENDC}")
             return
 
-        print(f"\n{Colors.CYAN}╔{'═'*68}╗{Colors.ENDC}")
-        print(f"{Colors.CYAN}║{Colors.BOLD}{Colors.WHITE}  AWS Instance Metadata Service (IMDS) Exploit{Colors.ENDC}{' '*23}{Colors.CYAN}║{Colors.ENDC}")
-        print(f"{Colors.CYAN}╚{'═'*68}╝{Colors.ENDC}\n")
-
-        print(f"{Colors.CYAN}🎯 Target:{Colors.ENDC} {Colors.WHITE}{self.target}{Colors.ENDC}")
-        print(f"{Colors.CYAN}🔍 Attack:{Colors.ENDC} {Colors.YELLOW}SSRF → IMDSv1 → IAM Credentials{Colors.ENDC}\n")
-
-        with Loader(desc=f"{Colors.CYAN}Initializing IMDS exploit module...{Colors.ENDC}",
-                   end=f"{Colors.GREEN}Exploit module loaded{Colors.ENDC}"):
-            time.sleep(0.7)
+        print(f"\n{Colors.GRAY}[*] AWS IMDS Exploit{Colors.ENDC}")
+        print(f"{Colors.GRAY}[*] Target: {self.target}{Colors.ENDC}")
+        print(f"{Colors.GRAY}[*] Vector: SSRF -> IMDSv1 -> IAM Credentials{Colors.ENDC}\n")
 
         # Tor 설정을 위해 환경 변수 설정
         env = os.environ.copy()
@@ -461,15 +454,12 @@ class RedChainCLI(cmd.Cmd):
         subprocess.run(cmd, shell=True, env=env)
 
         # 공격 성공 후 credentials 자동 로드
-        print(f"\n{Colors.CYAN}🔑 Attempting to load stolen credentials...{Colors.ENDC}\n")
-
-        with Loader(desc=f"{Colors.CYAN}Parsing credential files...{Colors.ENDC}",
-                   end=f"{Colors.GREEN}Credentials parsed{Colors.ENDC}"):
-            time.sleep(0.3)
-            self.aws_credentials = self.load_latest_credentials()
+        print(f"\n{Colors.GRAY}[*] Loading stolen credentials...{Colors.ENDC}\n")
+        self.aws_credentials = self.load_latest_credentials()
 
         if self.aws_credentials:
-            print(f"\n{Colors.GREEN}✓ Next step: Use{Colors.ENDC} {Colors.WHITE}escalate aws{Colors.ENDC} {Colors.GREEN}to enumerate AWS resources{Colors.ENDC}\n")
+            print(f"{Colors.GREEN}[+] Credentials loaded{Colors.ENDC}")
+            print(f"{Colors.GRAY}[*] Next: escalate aws{Colors.ENDC}\n")
 
     def do_escalate(self, arg):
         """권한 상승
@@ -963,31 +953,16 @@ Linux: 04_Privilege_Escalation/privesc_enum.py 실행
                 print(f"{Colors.FAIL}[-] 검색 경로: {[str(p) for p in possible_paths]}{Colors.ENDC}")
                 return
 
-            print(f"\n{Colors.RED}╔{'═'*68}╗{Colors.ENDC}")
-            print(f"{Colors.RED}║{Colors.BOLD}{Colors.YELLOW}  🔥 레드팀 완전 자동 침투 시작 🔥{Colors.ENDC}{' '*29}{Colors.RED}║{Colors.ENDC}")
-            print(f"{Colors.RED}╚{'═'*68}╝{Colors.ENDC}\n")
+            print(f"\n{Colors.GRAY}[*] Full RedTeam Automation{Colors.ENDC}")
+            print(f"{Colors.GRAY}[*] Target: {self.target}{Colors.ENDC}")
+            print(f"{Colors.GRAY}[*] Scenario: Webshell -> SSH Backdoor -> Privesc -> Persistence{Colors.ENDC}\n")
 
-            print(f"{Colors.CYAN}[*] 시나리오:{Colors.ENDC}")
-            print(f"    {Colors.GREEN}1.{Colors.ENDC} 웹쉘 작동 확인")
-            print(f"    {Colors.GREEN}2.{Colors.ENDC} SSH 키 생성")
-            print(f"    {Colors.GREEN}3.{Colors.ENDC} 웹쉘로 SSH 백도어 설치 (원격)")
-            print(f"    {Colors.GREEN}4.{Colors.ENDC} SSH 접속 테스트")
-            print(f"    {Colors.GREEN}5.{Colors.ENDC} 권한 상승 시도")
-            print(f"    {Colors.GREEN}6.{Colors.ENDC} Persistence 백도어 설치")
-            print(f"    {Colors.GREEN}7.{Colors.ENDC} Cron 백도어 설치")
-            print(f"    {Colors.GREEN}8.{Colors.ENDC} 웹쉘 백도어 설치")
-            print(f"    {Colors.GREEN}9.{Colors.ENDC} 대화형 SSH 쉘")
-            print()
-
-            confirm = input(f"{Colors.YELLOW}완전 자동 침투를 시작하시겠습니까? (yes/no): {Colors.ENDC}")
+            confirm = input(f"{Colors.WHITE}Start automated penetration? (yes/no): {Colors.ENDC}")
             if confirm.lower() != 'yes':
-                print(f"{Colors.FAIL}[-] 취소됨{Colors.ENDC}")
+                print(f"{Colors.FAIL}[-] Aborted{Colors.ENDC}")
                 return
 
             print()
-            with Loader(desc=f"{Colors.RED}Initializing RedTeam automation module...{Colors.ENDC}",
-                       end=f"{Colors.GREEN}Module loaded - Full automation started!{Colors.ENDC}"):
-                time.sleep(1)
 
             cmd = f"python3 {script_path} {self.target}"
             print(f"{Colors.GRAY}[cmd]{Colors.ENDC} {cmd}\n")

