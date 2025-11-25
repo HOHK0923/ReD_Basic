@@ -29,7 +29,7 @@ class Colors:
 class RedChainCLI(cmd.Cmd):
     intro = f"""
 {Colors.BOLD}{Colors.FAIL}╔═══════════════════════════════════════════════════════════════╗
-║                        RedChain v2.1                          ║
+║                        RedChain v2.2                          ║
 ║              Integrated Penetration Testing Framework        ║
 ║                                                               ║
 ║  {Colors.WARNING}⚠  교육 및 연구 목적 전용 / Educational Purpose Only{Colors.FAIL}  ║

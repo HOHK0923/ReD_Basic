@@ -21,7 +21,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # 패키지 정보
 PACKAGE_NAME="redchain"
-VERSION="2.1"
+VERSION="2.2"
 DATE=$(date +%Y%m%d)
 OUTPUT_NAME="${PACKAGE_NAME}_v${VERSION}_${DATE}"
 
@@ -48,22 +48,26 @@ cp -r "$PROJECT_ROOT/01_AWS_IMDS_Attack" "$TMP_DIR/redchain/"
 echo -e "${YELLOW}  - 02_Site_Defacement${NC}"
 cp -r "$PROJECT_ROOT/02_Site_Defacement" "$TMP_DIR/redchain/"
 
-# 4. 문서 복사
+# 4. Persistence 모듈 복사
+echo -e "${YELLOW}  - 03_Persistence${NC}"
+cp -r "$PROJECT_ROOT/03_Persistence" "$TMP_DIR/redchain/"
+
+# 5. 문서 복사
 echo -e "${YELLOW}  - Documentation${NC}"
 cp -r "$PROJECT_ROOT/03_Documentation" "$TMP_DIR/redchain/" 2>/dev/null || true
 
-# 5. 메인 README 복사
+# 6. 메인 README 복사
 echo -e "${YELLOW}  - README.md${NC}"
 cp "$PROJECT_ROOT/README.md" "$TMP_DIR/redchain/PROJECT_README.md" 2>/dev/null || true
 
-# 6. 불필요한 파일 제거
+# 7. 불필요한 파일 제거
 echo -e "${BLUE}[*] 정리 중...${NC}"
 find "$TMP_DIR" -name ".DS_Store" -delete
 find "$TMP_DIR" -name "__pycache__" -type d -exec rm -rf {} + 2>/dev/null || true
 find "$TMP_DIR" -name "*.pyc" -delete
 find "$TMP_DIR" -name ".git" -type d -exec rm -rf {} + 2>/dev/null || true
 
-# 7. 실행 권한 부여
+# 8. 실행 권한 부여
 echo -e "${BLUE}[*] 실행 권한 설정 중...${NC}"
 chmod +x "$TMP_DIR/redchain/redchain.py"
 chmod +x "$TMP_DIR/redchain/install.sh"
@@ -71,8 +75,9 @@ chmod +x "$TMP_DIR/redchain/package.sh"
 find "$TMP_DIR/redchain/01_AWS_IMDS_Attack" -name "*.py" -exec chmod +x {} \;
 find "$TMP_DIR/redchain/01_AWS_IMDS_Attack" -name "*.sh" -exec chmod +x {} \;
 find "$TMP_DIR/redchain/02_Site_Defacement" -name "*.sh" -exec chmod +x {} \;
+find "$TMP_DIR/redchain/03_Persistence" -name "*.sh" -exec chmod +x {} \;
 
-# 8. Kali Linux용 설치 가이드 생성
+# 9. Kali Linux용 설치 가이드 생성
 echo -e "${BLUE}[*] Kali Linux 설치 가이드 생성 중...${NC}"
 cat > "$TMP_DIR/redchain/INSTALL_KALI.md" << 'EOF'
 # RedChain - Kali Linux 설치 가이드
@@ -209,7 +214,7 @@ redchain/
 **Kali Linux에 최적화되었습니다!** 🐉
 EOF
 
-# 9. 압축 파일 생성
+# 10. 압축 파일 생성
 echo ""
 echo -e "${BLUE}[*] 압축 파일 생성 중...${NC}"
 
@@ -220,10 +225,10 @@ OUTPUT_FILE="$OUTPUT_DIR/${OUTPUT_NAME}.tar.gz"
 cd /tmp
 tar -czf "$OUTPUT_FILE" "$OUTPUT_NAME"
 
-# 10. 정리
+# 11. 정리
 rm -rf "$TMP_DIR"
 
-# 11. 완료
+# 12. 완료
 echo ""
 echo "╔═══════════════════════════════════════════════════════════════╗"
 echo "║                    ✅ 패키징 완료!                            ║"
