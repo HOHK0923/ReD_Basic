@@ -106,7 +106,7 @@ def print_banner():
 ║  {Colors.GRAY}╚═╝  ╚═╝╚══════╝╚═════╝  ╚════╝ ╚═╝  ╚═╝╚═╝  ╚═╝╚═╝╚═╝  ╚═══╝{Colors.CYAN}  ║
 ║                                                                       ║
 ║           {Colors.BOLD}{Colors.WHITE}Cloud Security Penetration Testing Framework{Colors.ENDC}{Colors.CYAN}            ║
-║                    {Colors.YELLOW}⚡ Powered by AI • v2.4 ⚡{Colors.CYAN}                      ║
+║                    {Colors.YELLOW}⚡ Powered by AI • v2.5 ⚡{Colors.CYAN}                      ║
 ╚═══════════════════════════════════════════════════════════════════════╝{Colors.ENDC}
     """
     print(banner)
