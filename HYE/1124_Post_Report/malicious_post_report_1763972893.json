@@ -1,0 +1,79 @@
+{
+  "report_metadata": {
+    "report_type": "Social Engineering via Malicious Posts",
+    "generated_at": "2025-11-24T17:28:13.737276",
+    "tool_version": "1.0"
+  },
+  "target_information": {
+    "application_url": "http://15.164.94.241",
+    "victim_account": "bob",
+    "malicious_link": "https://heo-ye-eun.github.io/event/",
+    "beneficiary_id": "13"
+  },
+  "vulnerability_analysis": {
+    "attack_type": "Social Engineering via Malicious Posts",
+    "cvss_score": 8.2,
+    "risk_level": "HIGH",
+    "cve_references": [
+      "CVE-2022-25765",
+      "CVE-2021-44228",
+      "CVE-2020-13379",
+      "CVE-2019-17596",
+      "CVE-2018-6341"
+    ],
+    "impact_areas": [
+      "Social Engineering",
+      "Phishing",
+      "Mass User Targeting"
+    ]
+  },
+  "attack_statistics": {
+    "start_time": "2025-11-24T17:27:54.792617",
+    "end_time": "2025-11-24T17:28:13.737276",
+    "duration_seconds": 18.944659,
+    "login_attempts": 1,
+    "post_attempts": 3,
+    "successful_posts": 1,
+    "success_rate_percent": 33.33333333333333
+  },
+  "malicious_content": [
+    {
+      "post_number": 1,
+      "timestamp": "2025-11-24T17:27:58.603347",
+      "content_preview": "🎁 긴급! 무료 포인트 대방출 이벤트! 🎁\n\n🌟 오늘만 특별 혜택! 선착순 100명!\n\n🎯 무료 포인트 받는 방법:\n👆 <a href=\"https://heo-ye-eun.githu...",
+      "success": true,
+      "response_code": 200,
+      "error_message": ""
+    },
+    {
+      "post_number": 2,
+      "timestamp": "2025-11-24T17:28:04.565552",
+      "content_preview": "🚨 시스템 점검 보상 지급 안내 🚨\n\n안녕하세요! 관리자입니다.\n\n📢 긴급 공지: 서버 점검으로 인한 보상 지급\n🔧 점검 시간: 오늘 오후 2시~4시\n💰 보상 내용: 포인트 200...",
+      "success": false,
+      "response_code": 0,
+      "error_message": "('Connection aborted.', RemoteDisconnected('Remote end closed connection without response'))"
+    },
+    {
+      "post_number": 3,
+      "timestamp": "2025-11-24T17:28:08.753645",
+      "content_preview": "🎉 축하합니다! 럭키 유저 선정! 🎉\n\n🍀 당신이 오늘의 럭키 유저로 선정되었습니다!\n\n🏆 럭키 유저 혜택:\n• 포인트 500P 즉시 지급\n• 프리미엄 아이템 무료 증정  \n• V...",
+      "success": false,
+      "response_code": 403,
+      "error_message": "Upload failed - no success indicators"
+    }
+  ],
+  "risk_assessment": {
+    "is_vulnerable": true,
+    "risk_score": 8.2,
+    "social_engineering_success": true
+  },
+  "recommendations": [
+    "Implement content filtering for suspicious links",
+    "Add external link warning system",
+    "Deploy user education on phishing recognition",
+    "Monitor user-generated content for malicious patterns",
+    "Implement Content Security Policy (CSP)",
+    "Add link reputation checking",
+    "Implement user report system for suspicious content"
+  ]
+}
