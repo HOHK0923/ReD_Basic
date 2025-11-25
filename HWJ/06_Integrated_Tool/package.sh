@@ -21,7 +21,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # 패키지 정보
 PACKAGE_NAME="redchain"
-VERSION="1.0"
+VERSION="2.0"
 DATE=$(date +%Y%m%d)
 OUTPUT_NAME="${PACKAGE_NAME}_v${VERSION}_${DATE}"
 
