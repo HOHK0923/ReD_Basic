@@ -542,7 +542,7 @@ class RedChainCLI(cmd.Cmd):
             return
 
         print(f"{Colors.WARNING}[!] {action_msg}를 실행합니다.{Colors.ENDC}")
-        print(f"{Colors.RED}[!] 승인된 레드팀 시뮬레이션 환경에서만 사용하세요!{Colors.ENDC}\n")
+        print(f"{Colors.FAIL}[!] 승인된 레드팀 시뮬레이션 환경에서만 사용하세요!{Colors.ENDC}\n")
 
         # 확인
         if arg != 'cleanup':
