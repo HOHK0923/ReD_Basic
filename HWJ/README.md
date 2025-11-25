@@ -1,6 +1,6 @@
 # RedChain - AWS 클라우드 보안 침투 테스트 자동화
 
-![Version](https://img.shields.io/badge/version-2.2-blue.svg)
+![Version](https://img.shields.io/badge/version-2.3-blue.svg)
 ![Python](https://img.shields.io/badge/python-3.8+-brightgreen.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 

