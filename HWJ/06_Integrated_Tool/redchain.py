@@ -946,10 +946,21 @@ Linux: 04_Privilege_Escalation/privesc_enum.py 실행
 
         if arg == 'redteam':
             # 완전 자동 레드팀 침투
-            script_path = self.project_root / '06_Integrated_Tool' / 'auto_redteam.py'
+            # 개발 환경과 배포 환경 모두 지원
+            possible_paths = [
+                self.project_root / '06_Integrated_Tool' / 'auto_redteam.py',  # 개발
+                self.project_root / 'auto_redteam.py',  # 배포
+            ]
 
-            if not script_path.exists():
-                print(f"{Colors.FAIL}[-] 스크립트를 찾을 수 없습니다: {script_path}{Colors.ENDC}")
+            script_path = None
+            for path in possible_paths:
+                if path.exists():
+                    script_path = path
+                    break
+
+            if not script_path:
+                print(f"{Colors.FAIL}[-] 스크립트를 찾을 수 없습니다{Colors.ENDC}")
+                print(f"{Colors.FAIL}[-] 검색 경로: {[str(p) for p in possible_paths]}{Colors.ENDC}")
                 return
 
             print(f"\n{Colors.RED}╔{'═'*68}╗{Colors.ENDC}")
