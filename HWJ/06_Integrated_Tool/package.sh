@@ -21,7 +21,7 @@ PROJECT_ROOT="$(dirname "$SCRIPT_DIR")"
 
 # 패키지 정보
 PACKAGE_NAME="redchain"
-VERSION="2.3"
+VERSION="2.4"
 DATE=$(date +%Y%m%d)
 OUTPUT_NAME="${PACKAGE_NAME}_v${VERSION}_${DATE}"
 
@@ -52,6 +52,10 @@ cp -r "$PROJECT_ROOT/02_Site_Defacement" "$TMP_DIR/redchain/"
 echo -e "${YELLOW}  - 03_Persistence${NC}"
 cp -r "$PROJECT_ROOT/03_Persistence" "$TMP_DIR/redchain/"
 
+# 4.5. Privilege Escalation 모듈 복사
+echo -e "${YELLOW}  - 04_Privilege_Escalation${NC}"
+cp -r "$PROJECT_ROOT/04_Privilege_Escalation" "$TMP_DIR/redchain/" 2>/dev/null || true
+
 # 5. 문서 복사
 echo -e "${YELLOW}  - Documentation${NC}"
 cp -r "$PROJECT_ROOT/03_Documentation" "$TMP_DIR/redchain/" 2>/dev/null || true
@@ -76,6 +80,7 @@ find "$TMP_DIR/redchain/01_AWS_IMDS_Attack" -name "*.py" -exec chmod +x {} \;
 find "$TMP_DIR/redchain/01_AWS_IMDS_Attack" -name "*.sh" -exec chmod +x {} \;
 find "$TMP_DIR/redchain/02_Site_Defacement" -name "*.sh" -exec chmod +x {} \;
 find "$TMP_DIR/redchain/03_Persistence" -name "*.sh" -exec chmod +x {} \;
+find "$TMP_DIR/redchain/04_Privilege_Escalation" -name "*.py" -exec chmod +x {} \; 2>/dev/null || true
 
 # 9. Kali Linux용 설치 가이드 생성
 echo -e "${BLUE}[*] Kali Linux 설치 가이드 생성 중...${NC}"
