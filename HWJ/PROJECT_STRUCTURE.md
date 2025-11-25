@@ -17,6 +17,11 @@ CLEAN_PROJECT/
 │   ├── RESET_ALL.sh                  # 백업 삭제
 │   └── RESTORE_LARAVEL.sh            # Laravel 복구
 │
+├── 03_Persistence/
+│   ├── README.md                     # Persistence 모듈 문서
+│   ├── backdoor_setup.sh             # 백도어 설치 (사용자, SSH, Cron, Systemd, 웹쉘)
+│   └── cleanup_backdoor.sh           # 백도어 제거 및 정리
+│
 ├── 05_Code_Analysis/
 │   ├── REDCHAIN_CODE_ANALYSIS.md     # redchain.py 분석
 │   └── 02_COMMAND_IMPLEMENTATION.md  # 명령어 구현 분석
@@ -62,6 +67,29 @@ python3 120_aws_imds_exploit.py http://target-ip
 - Laravel index.php 복구
 - 모든 변조 파일 정리
 
+### 03_Persistence/
+
+**backdoor_setup.sh** (200+ 라인)
+- 백도어 사용자 생성 (sysupdate)
+- SSH 키 백도어 설치
+- Cron 작업 추가 (매 시간 리버스 쉘)
+- Systemd 서비스 백도어
+- 웹쉘 설치 (/.system/health.php)
+
+**cleanup_backdoor.sh** (100+ 라인)
+- 모든 백도어 제거
+- 시스템 복구
+- 로그 정리
+
+실행:
+```bash
+# 백도어 설치
+redchain> persist install
+
+# 백도어 제거
+redchain> persist cleanup
+```
+
 ### 05_Code_Analysis/
 
 포트폴리오용 코드 분석 문서
@@ -90,6 +118,7 @@ class RedChainCLI(cmd.Cmd):
     def do_imds()      # IMDS 공격
     def do_escalate()  # 권한 상승
     def do_deface()    # 웹 변조
+    def do_persist()   # Persistence 백도어
 ```
 
 **install.sh** (200 라인)
@@ -112,10 +141,10 @@ class RedChainCLI(cmd.Cmd):
 
 ## 총 라인 수
 
-- Python: ~1,100
-- Bash: ~1,000
-- Markdown: ~3,000
-- **합계**: ~5,100 라인
+- Python: ~1,200
+- Bash: ~1,300
+- Markdown: ~4,000
+- **합계**: ~6,500 라인
 
 ---
 

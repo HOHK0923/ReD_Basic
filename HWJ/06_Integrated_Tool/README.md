@@ -116,9 +116,12 @@ redchain> show                              # 설정 확인
 |--------|------|-------------------|
 | `imds` | AWS IMDS 공격 | `120_aws_imds_exploit.py` |
 | `escalate` | AWS 권한 상승 | `121_aws_privilege_escalation.py` |
-| `deface` | 웹사이트 변조 (랜섬웨어) | `SILENT_DOWNLOAD.sh` |
-| `deface modern` | 모던 해킹 페이지 | `MODERN_DEFACEMENT.sh` |
-| `deface restore` | 원본 복구 | `TOGGLE_SITE.sh` |
+| `deface` | 웹사이트 변조 (랜섬웨어) | `MODERN_DEFACEMENT_FIXED.sh` |
+| `deface toggle` | 원본/해킹 토글 | `TOGGLE_MODERN_FIXED.sh` |
+| `deface restore` | 원본 복구 | `TOGGLE_MODERN_FIXED.sh` |
+| `persist install` | 백도어 설치 (레드팀 시뮬레이션) | `backdoor_setup.sh` |
+| `persist cleanup` | 백도어 제거 | `cleanup_backdoor.sh` |
+| `persist info` | 백도어 정보 표시 | - |
 
 ### SSH 명령어
 
@@ -194,9 +197,15 @@ redchain> escalate
 # 4. 웹사이트 변조
 redchain> deface
 
-# 5. 원격 명령 실행
+# 5. Persistence 백도어 설치 (레드팀 시뮬레이션)
+redchain> persist install
+
+# 6. 원격 명령 실행
 redchain> ssh whoami
 redchain> ssh 'ls -la /var/www/html'
+
+# 7. 시뮬레이션 종료 후 정리
+redchain> persist cleanup
 
 # 6. 복구
 redchain> deface restore

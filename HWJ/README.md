@@ -35,6 +35,11 @@ WAF 우회 (health check 예외)
 - AWS Credentials 자동 수집 및 재사용
 - SSH 비밀번호 자동 입력 (sshpass)
 - Tor 프록시 지원
+- **Persistence 백도어** (레드팀 시뮬레이션)
+  - 백도어 사용자 생성
+  - SSH 키 백도어
+  - Cron/Systemd 자동 재연결
+  - 웹쉘
 
 ---
 
@@ -61,6 +66,10 @@ redchain> set ssh_pass MyPassword123
 redchain> imds          # Credentials 탈취
 redchain> escalate      # AWS 리소스 확인
 redchain> deface        # 웹사이트 변조
+redchain> persist install  # 백도어 설치 (레드팀 시뮬레이션)
+
+# 시뮬레이션 종료 후 정리
+redchain> persist cleanup  # 모든 백도어 제거
 ```
 
 ---
@@ -70,6 +79,7 @@ redchain> deface        # 웹사이트 변조
 ```
 ├── 01_AWS_IMDS_Attack/         # IMDS 공격 스크립트
 ├── 02_Site_Defacement/         # 웹 변조 스크립트
+├── 03_Persistence/             # 백도어 및 Persistence 모듈
 ├── 05_Code_Analysis/           # 코드 분석 문서
 └── 06_Integrated_Tool/         # CLI 도구
 ```
