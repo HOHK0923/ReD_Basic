@@ -42,14 +42,15 @@ HWJ/
 │   ├── auto_redteam_ultimate.py # 완전 자동화 시도
 │   └── real_penetration.py      # User-data 백도어
 │
-├── 07_Manual_Penetration_Guide/ # 수동 침투 테스트 연구
-│   ├── 01~09_*.md               # 단계별 가이드
-│   ├── 10_full_automation_script.py
-│   ├── 11_real_world_attacks.md # 실제 해커 방법론
-│   ├── 12_low_privilege_escalation_scenario.md
-│   └── 13_low_priv_to_root.py
+├── PORTFOLIO_DOCUMENTS/         # 포트폴리오 문서 (필독!)
+│   ├── AUTOMATED_TOOL_FAILURE_REPORT.md  # 자동화 실패 분석
+│   └── 07_Manual_Penetration_Guide/      # 수동 침투 테스트 연구
+│       ├── 01~09_*.md               # 단계별 가이드
+│       ├── 10_full_automation_script.py
+│       ├── 11_real_world_attacks.md # 실제 해커 방법론
+│       ├── 12_low_privilege_escalation_scenario.md
+│       └── 13_low_priv_to_root.py
 │
-├── AUTOMATED_TOOL_FAILURE_REPORT.md  # 자동화 실패 분석 (필독!)
 └── README.md                    # 이 파일
 ```
 
@@ -252,14 +253,14 @@ cd 06_Integrated_Tool
 
 # 개별 도구
 python3 01_AWS_IMDS_Attack/120_aws_imds_exploit.py
-python3 07_Manual_Penetration_Guide/13_low_priv_to_root.py
+python3 PORTFOLIO_DOCUMENTS/07_Manual_Penetration_Guide/13_low_priv_to_root.py
 ```
 
 ### 3. 수동 침투 테스트
 
 ```bash
 # 가이드 문서
-cd 07_Manual_Penetration_Guide
+cd PORTFOLIO_DOCUMENTS/07_Manual_Penetration_Guide
 cat README.md
 
 # 각 Phase 학습
@@ -273,17 +274,17 @@ cat 11_real_world_attacks.md
 
 ### 🌟 가장 중요한 문서들
 
-1. **[AUTOMATED_TOOL_FAILURE_REPORT.md](./AUTOMATED_TOOL_FAILURE_REPORT.md)**
+1. **[AUTOMATED_TOOL_FAILURE_REPORT.md](./PORTFOLIO_DOCUMENTS/AUTOMATED_TOOL_FAILURE_REPORT.md)**
    - 자동화 도구 개발 및 실패 전 과정
    - 솔직한 경험과 배운 점
    - **포트폴리오의 핵심**
 
-2. **[11_real_world_attacks.md](./07_Manual_Penetration_Guide/11_real_world_attacks.md)**
+2. **[11_real_world_attacks.md](./PORTFOLIO_DOCUMENTS/07_Manual_Penetration_Guide/11_real_world_attacks.md)**
    - 자동화가 실패했을 때의 대안
    - 실제 해커들이 사용하는 방법
    - 피싱, 내부자, 장기전 전략
 
-3. **[12_low_privilege_escalation_scenario.md](./07_Manual_Penetration_Guide/12_low_privilege_escalation_scenario.md)**
+3. **[12_low_privilege_escalation_scenario.md](./PORTFOLIO_DOCUMENTS/07_Manual_Penetration_Guide/12_low_privilege_escalation_scenario.md)**
    - 가장 현실적인 공격 시나리오
    - 낮은 권한 → Root 권한 상승
    - 실무에서 자주 발생하는 실수 활용
