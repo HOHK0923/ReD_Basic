@@ -923,6 +923,7 @@ Linux: 04_Privilege_Escalation/privesc_enum.py 실행
         """자동 공격 체인 실행
 
 사용법:
+    auto bypass    - 🛡️ 블루팀 방어 우회 자동 침투 (NEW!) 🛡️
     auto redteam   - 🔥 완전 자동 레드팀 침투 (추천!) 🔥
     auto recon     - 정찰만 (포트스캔 + 엔드포인트 탐색)
     auto exploit   - 전체 공격 체인 (IMDS → 권한상승 → 변조)
@@ -932,6 +933,43 @@ Linux: 04_Privilege_Escalation/privesc_enum.py 실행
 """
         if not self.target:
             print(f"{Colors.FAIL}[-] 타겟이 설정되지 않았습니다.{Colors.ENDC}")
+            return
+
+        if arg == 'bypass':
+            # 블루팀 방어 우회 자동 침투
+            possible_paths = [
+                self.project_root / '06_Integrated_Tool' / 'auto_redteam_blueteam_bypass.py',  # 개발
+                self.project_root / 'auto_redteam_blueteam_bypass.py',  # 배포
+            ]
+
+            script_path = None
+            for path in possible_paths:
+                if path.exists():
+                    script_path = path
+                    break
+
+            if not script_path:
+                print(f"{Colors.FAIL}[-] 스크립트를 찾을 수 없습니다{Colors.ENDC}")
+                print(f"{Colors.FAIL}[-] 검색 경로: {[str(p) for p in possible_paths]}{Colors.ENDC}")
+                return
+
+            print(f"\n{Colors.RED}{'='*70}{Colors.ENDC}")
+            print(f"{Colors.BOLD}{Colors.YELLOW}  블루팀 방어 우회 자동 침투{Colors.ENDC}")
+            print(f"{Colors.RED}{'='*70}{Colors.ENDC}\n")
+            print(f"{Colors.WHITE}타겟: {self.target}{Colors.ENDC}")
+            print(f"{Colors.GRAY}전략: Fail2Ban 우회 → ModSecurity 우회 → SSRF/Upload → AWS 장악{Colors.ENDC}")
+            print(f"{Colors.GRAY}시간: 약 5-10분 소요 (느린 요청으로 탐지 회피){Colors.ENDC}\n")
+
+            confirm = input(f"{Colors.YELLOW}⚠️  블루팀 방어 우회 공격을 시작하시겠습니까? (yes/no): {Colors.ENDC}")
+            if confirm.lower() != 'yes':
+                print(f"{Colors.FAIL}[-] 취소됨{Colors.ENDC}")
+                return
+
+            print()
+
+            cmd = f"python3 {script_path} {self.target}"
+            print(f"{Colors.GRAY}[cmd]{Colors.ENDC} {cmd}\n")
+            os.system(cmd)
             return
 
         if arg == 'redteam':

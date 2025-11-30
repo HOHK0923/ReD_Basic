@@ -52,6 +52,27 @@ class SecurityAlertTester:
         """테스트 간 대기"""
         time.sleep(seconds)
 
+    def login(self, username='alice', password='alice2024'):
+        """로그인 수행"""
+        try:
+            login_url = urljoin(self.target_url, '/login.php')
+            data = {
+                'username': username,
+                'password': password
+            }
+            self.log(f"로그인 시도: {username} / {password}")
+            response = self.session.post(login_url, data=data, timeout=10, allow_redirects=True)
+
+            if 'logout' in response.text.lower() or 'dashboard' in response.url.lower() or response.status_code == 200:
+                self.log(f"로그인 성공: {username}", 'SUCCESS')
+                return True
+            else:
+                self.log(f"로그인 실패: {username}", 'ERROR')
+                return False
+        except Exception as e:
+            self.log(f"로그인 오류: {e}", 'ERROR')
+            return False
+
     # ========== 테스트 1: Webshell 이후 URI 다변화 의심 탐지 ==========
     def test_webshell_uri_diversity(self):
         """
@@ -206,6 +227,11 @@ class SecurityAlertTester:
         self.log("=" * 60, 'TEST')
         self.log("TEST 4: 웹쉘 업로드 및 실행 탐지", 'TEST')
         self.log("=" * 60, 'TEST')
+
+        # 로그인 필요
+        if not self.login():
+            self.log("로그인 실패로 웹쉘 업로드 테스트 건너뛰기", 'WARNING')
+            return
 
         # 웹쉘 파일 업로드 시뮬레이션
         webshell_content = "<?php system($_GET['cmd']); ?>"
@@ -399,6 +425,10 @@ class SecurityAlertTester:
         self.log("TEST 8: XSS 시도 탐지", 'TEST')
         self.log("=" * 60, 'TEST')
 
+        # 로그인 필요
+        if not self.login():
+            self.log("로그인 실패, GET 기반 XSS만 테스트", 'WARNING')
+
         xss_payloads = [
             '<script>alert(1)</script>',
             '<img src=x onerror=alert(1)>',
@@ -409,13 +439,26 @@ class SecurityAlertTester:
             '<script>document.cookie</script>'
         ]
 
+        # new_post.php에 XSS 페이로드 게시 (로그인 필요)
+        self.log("new_post.php에 XSS 페이로드 게시 시도...")
+        new_post_url = urljoin(self.target_url, '/new_post.php')
+        for payload in xss_payloads[:3]:  # 처음 3개만
+            try:
+                data = {'content': payload}
+                self.log(f"게시물 작성: {payload[:40]}...")
+                response = self.session.post(new_post_url, data=data, timeout=5)
+                self.wait_between_tests(0.5)
+            except Exception as e:
+                pass
+
+        # GET 기반 XSS 테스트
         test_endpoints = [
             '/search.php?q=',
             '/comment.php?text=',
             '/profile.php?name='
         ]
 
-        self.log("XSS 페이로드 전송 중...")
+        self.log("GET 파라미터 XSS 페이로드 전송 중...")
 
         for endpoint in test_endpoints:
             for payload in xss_payloads:
