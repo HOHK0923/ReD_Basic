@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>사이버보안 프로젝트 최종 발표: Red Team 자동화 vs Blue Team 실시간 대응 (37장)</title>
+    <style>
+        /* [CSS: 전문성과 시각적 차별성을 높이는 사이버펑크 다크 테마] */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;600;700;900&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans KR', sans-serif; overflow: hidden; background: #0a0e27; }
+        .slide-container { width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+        .slide {
+            display: none; width: 1280px; height: 720px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            padding: 60px 80px; box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 2px solid #334155; border-radius: 15px; color: #e2e8f0;
+            position: relative; overflow: hidden;
+        }
+
+        .cyber-grid { position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: linear-gradient(0deg, transparent 95%, #475569 100%), linear-gradient(90deg, transparent 95%, #475569 100%); background-size: 50px 50px; opacity: 0.05; z-index: 0; }
+        .content { z-index: 1; position: relative; }
+        h1, h2, h3 { font-weight: 700; color: #f0f4ff; }
+        
+        /* 네온 효과 */
+        .neon-red { text-shadow: 0 0 5px #fca5a5, 0 0 15px #ef4444; color: #fee2e2; }
+        .neon-blue { text-shadow: 0 0 5px #93c5fd, 0 0 15px #3b82f6; color: #eff6ff; }
+
+        /* 강조 색상 */
+        .highlight-red { color: #fca5a5; font-weight: 600; }
+        .highlight-blue { color: #93c5fd; font-weight: 600; }
+
+        /* 카드 및 코드 블록 */
+        .glass-card { background: rgba(30, 41, 59, 0.6); backdrop-filter: blur(5px); border: 1px solid rgba(71, 85, 105, 0.5); border-radius: 10px; padding: 20px; margin-bottom: 20px; }
+        .glass-red { border-left: 5px solid #ef4444; }
+        .glass-blue { border-left: 5px solid #3b82f6; }
+        .code-block { background: #0f172a; padding: 15px; border-radius: 5px; font-family: 'Consolas', monospace; overflow-x: auto; border: 1px solid #1e293b; color: #a7f3d0; font-size: 14px; }
+        .code-block .keyword { color: #c084fc; } .code-block .function { color: #86efac; } .code-block .comment { color: #94a3b8; }
+        
+        /* 레이아웃 */
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; }
+        .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+        
+        /* 푸터 및 제목 */
+        .slide-footer { position: absolute; bottom: 20px; right: 40px; font-size: 18px; color: #475569; }
+        .slide h2 { margin-bottom: 30px; border-bottom: 2px solid #334155; padding-bottom: 10px; }
+
+        .cyber-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
+        .cyber-table th, .cyber-table td { padding: 12px 15px; border-bottom: 1px solid #1e293b; }
+        .cyber-table th { background-color: #1e293b; font-weight: 600; color: #94a3b8; }
+
+        .image-placeholder { 
+            height: 250px; background-color: #1e293b; border: 2px dashed #475569; 
+            display: flex; align-items: center; justify-content: center; font-size: 18px; 
+            color: #94a3b8; margin-top: 20px; border-radius: 8px; 
+        }
+
+        .slide img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: block;
+            object-fit: contain; /* 이미지 비율 유지 */
+        }
+
+        .img-300 { height: 300px; }
+        .img-350 { height: 350px; }
+        .img-450 { height: 450px; }
+
+    </style>
+</head>
+<body>
+    <div class="slide-container">
+        <div id="slides">
+
+            <div class="slide" data-index="1">
+                <div class="cyber-grid"></div>
+                <div class="content" style="text-align: center; padding-top: 150px;">
+                    <h1 style="font-size: 68px; margin-bottom: 20px;" class="neon-blue">
+                        사이버보안 아키텍처 구축 프로젝트 최종 발표
+                    </h1>
+                    <h2 style="font-size: 40px; color: #93c5fd; border: none;">
+                        Red Team 자동 공격 시스템 vs Blue Team 실시간 SOAR 대응
+                    </h2>
+                    <p style="font-size: 24px; color: #475569; margin-top: 100px;">
+                        팀명: **Anonymous** | 발표자: **황준하**
+                    </p>
+                    <p style="font-size: 20px; color: #475569;">
+                        발표일: 2025년 12월 2일
+                    </p>
+                </div>
+                <div class="slide-footer">1/37</div>
+            </div>
+
+            <div class="slide" data-index="2">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">평가 항목 기반 목표 설정</h2>
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th style="width: 20%;">평가 항목</th>
+                                <th>프로젝트 구현 목표 (Goal)</th>
+                                <th style="width: 15%;">배점</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>**전문성**</td>
+                                <td>WAF Custom Rule, SIEM Threat Scoring, Fail2Ban Custom Filter 등 **기술적 원리 기반**의 정확한 보안 기능 구현.</td>
+                                <td>30점</td>
+                            </tr>
+                            <tr>
+                                <td>**차별성**</td>
+                                <td>Red Team의 **92% 시간 단축 자동화**와 Blue Team의 **MTTR Zero 대응**을 통한 실질적 위협 대응 모델 제시.</td>
+                                <td>30점</td>
+                            </tr>
+                            <tr>
+                                <td>**완성도**</td>
+                                <td>공격(Red) - 탐지(WAF/SIEM) - 대응(SOAR)의 3단계 파이프라인이 <span class="highlight-blue">**논리적이고 유기적으로 100% 작동**</span>하는 체계 구축.</td>
+                                <td>30점</td>
+                            </tr>
+                            <tr>
+                                <td>**발표 역량**</td>
+                                <td>명확한 기술 시연 구성 및 단계별 논리적 설명.</td>
+                                <td>10점</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="slide-footer">2/37</div>
+            </div>
+
+            <div class="slide" data-index="3">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">프로젝트 배경: 공격 속도 vs 대응 시간</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-red">
+                            <h3 class="neon-red" style="margin-bottom: 15px;">문제 정의: 방어의 지연</h3>
+                            <p style="font-size: 18px;">
+                                침투 테스터의 **공격 자동화 속도**는 점점 빨라지는 반면, 기업의 **수동적인 탐지 및 대응 시간(MTTR)**은 여전히 느려, 방어 체계가 실제 위협에 뒤처지고 있습니다.
+                            </p>
+                        </div>
+                        <div class="glass-card glass-blue">
+                            <h3 class="neon-blue" style="margin-bottom: 15px;">해결 방안: 대응의 자동화</h3>
+                            <p style="font-size: 18px;">
+                                Red Team의 **공격 자동화**를 통해 취약점을 신속하게 발굴하고, Blue Team의 **실시간 대응 자동화(SOAR)**를 통해 MTTR을 획기적으로 줄이는 통합 검증 환경 구축.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="image-placeholder" style="height: 200px;">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">3/37</div>
+            </div>
+
+            <div class="slide" data-index="4">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-red">프로젝트 범위: 5대 핵심 웹/클라우드 취약점</h2>
+                    <div class="grid-3" style="margin-top: 40px;">
+                        <div class="glass-card glass-red"><h3>1. SQL Injection (SQLi)</h3><p>데이터베이스 조작 및 정보 탈취</p></div>
+                        <div class="glass-card glass-red"><h3>2. Cross-Site Scripting (XSS)</h3><p>사용자 세션 탈취 및 악성 스크립트 삽입</p></div>
+                        <div class="glass-card glass-red"><h3>3. LFI/RFI/SSRF</h3><p>파일/시스템 접근 및 AWS IMDS 익스플로잇</p></div>
+                        <div class="glass-card glass-red"><h3>4. CSRF</h3><p>사용자 권한을 이용한 임의 기능 실행</p></div>
+                        <div class="glass-card glass-red"><h3>5. WAF Bypass</h3><p>방어 체계 무력화 및 회피 기법 연구</p></div>
+                        <div class="glass-card glass-red" style="grid-column: span 3; text-align: center;">
+                            <p style="font-size: 20px; font-weight: 600;">
+                                5가지 취약점에 대한 **탐지(WAF) → 분석(SIEM) → 자동 대응(SOAR)** 전체 파이프라인 검증.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">4/37</div>
+            </div>
+
+            <div class="slide" data-index="5">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">프로젝트 통합 아키텍처 (High-Level)</h2>
+                    <div class="grid-3" style="margin-top: 40px;">
+                        <div style="text-align: center;">
+                            <h3 class="neon-red">PHASE 1: ATTACK</h3>
+                            <p style="font-size: 18px; margin-top: 10px;">Red Team</p>
+                            <p class="highlight-red" style="font-size: 24px; margin-top: 5px;">**`auto_redteam_ultimate.py`**</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <h3 class="neon-blue">PHASE 2: DEFEND/DETECT</h3>
+                            <p style="font-size: 18px; margin-top: 10px;">Blue Team (WAF & SIEM)</p>
+                            <p class="highlight-blue" style="font-size: 24px; margin-top: 5px;">**ModSecurity & Splunk**</p>
+                        </div>
+                        <div style="text-align: center;">
+                            <h3 class="neon-blue">PHASE 3: AUTOMATE</h3>
+                            <p style="font-size: 18px; margin-top: 10px;">Blue Team (SOAR)</p>
+                            <p class="highlight-blue" style="font-size: 24px; margin-top: 5px;">**Fail2Ban & Webhook**</p>
+                        </div>
+                    </div>
+                    <div class="image-placeholder img-350">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">5/37</div>
+            </div>
+
+            <div class="slide" data-index="6">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-red">02. Red Team: 자동 공격 시스템 목표</h2>
+                    <div class="glass-card glass-red" style="margin-bottom: 30px;">
+                        <h3 class="neon-red" style="margin-bottom: 15px;">핵심 지표: Time to Exploit 92% 단축</h3>
+                        <p style="font-size: 20px; font-weight: 500;">
+                            기존 **수동 침투 테스트**에서 평균 1시간이 소요되던 5대 취약점 점검을, 자동화 툴을 통해 <span class="highlight-red">**평균 5분 이내**</span>로 단축하여 공격 효율성을 극대화합니다. (HWJ 개발)
+                        </p>
+                    </div>
+                    <div class="image-placeholder img-300">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">6/37</div>
+            </div>
+            
+            <div class="slide" data-index="7">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 style="color: #fca5a5;">핵심 도구: `auto_redteam_ultimate.py` 상세 (HWJ)</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-red">
+                            <h3 class="neon-red" style="margin-bottom: 15px;">5-Phase Attack Chain (RedChain)</h3>
+                            <p style="font-size: 17px;">
+                                취약점 탐지부터 클라우드 인프라 장악까지의 전 과정을 Python 기반으로 통합 모듈화했습니다.
+                            </p>
+                            <ul style="font-size: 16px; margin-left: 25px; margin-top: 15px; line-height: 1.8;">
+                                <li>**Phase 1**: SSRF/IMDS 취약점 탐지</li>
+                                <li>**Phase 2**: WAF Bypass Attempt (Obfuscation)</li>
+                                <li>**Phase 3**: IAM Credential 탈취 및 권한 상승</li>
+                                <li>**Phase 4**: Persistence (EC2 User-data 백도어)</li>
+                                <li>**Phase 5**: Reporting & Cleanup</li>
+                            </ul>
+                        </div>
+                        <div class="glass-card">
+                            <p style="color: #fca5a5; font-weight: 700;">Code Snippet: 공격 통합 로직</p>
+                            <div class="code-block">
+                                <span class="keyword">def</span> <span class="function">run_ultimate_redteam</span>(url, bypass=False):<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">log_info</span>(<span class="string">"Starting 5-Phase Attack..."</span>)<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> <span class="function">ssrf_imds_module</span>(url):<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">aws_escalation</span>() <span class="comment"># IAM Credential 탈취</span><br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">if</span> <span class="function">xss_chain</span>(url, bypass):<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="function">report_success</span>(<span class="string">"XSS"</span>)<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;...
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">7/37</div>
+            </div>
+
+            <div class="slide" data-index="8">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 style="color: #fca5a5;">Red Team Detail: SQL Injection 자동화 (HWJ)</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-red">
+                            <h3 class="neon-red" style="margin-bottom: 15px;">24종 Payload Generation & Fuzzing</h3>
+                            <p style="font-size: 17px;">
+                                에러 기반, 유니언 기반, **블라인드 기반(Boolean/Time-based)** SQLi 시나리오에 맞는 <span class="highlight-red">**24종의 페이로드**</span>를 자동 생성하고 WAF 차단 여부를 Fuzzing합니다.
+                            </p>
+                            <ul style="font-size: 16px; margin-left: 25px; margin-top: 15px;">
+                                <li>`' OR 1=1 --`, `UNION SELECT` 등 기본 패턴 포함</li>
+                                <li>Time-based 공격을 통한 **WAF 느린 응답** 유도 테스트</li>
+                            </ul>
+                        </div>
+                        <div class="image-placeholder img-300">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">8/37</div>
+            </div>
+
+            <div class="slide" data-index="9">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 style="color: #fca5a5;">Red Team Detail: XSS 공격 체인 및 피싱 (YOUNG)</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-red">
+                            <h3 class="neon-red" style="margin-bottom: 15px;">Blind XSS와 피싱 연계 시나리오</h3>
+                            <p style="font-size: 17px;">
+                                **Stored XSS** 취약점 공격 성공 시, 관리자 페이지에 악성 스크립트를 삽입하고 **Blind XSS**를 통해 관리자의 세션 정보 탈취를 자동 구현했습니다. (YOUNG)
+                            </p>
+                            <p style="font-size: 17px; margin-top: 10px;">
+                                **피싱**: `bf2025.php` 및 `secure_login.php`를 통해 사용자 **크리덴셜 탈취**를 병행합니다.
+                            </p>
+                        </div>
+                        <div class="image-placeholder img-300">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">9/37</div>
+            </div>
+
+            <div class="slide" data-index="10">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 style="color: #fca5a5;">Red Team Detail: WAF 우회 (12가지 난독화)</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-red">
+                            <h3 class="neon-red" style="margin-bottom: 15px;">다중 인코딩 및 조각화 (YOUNG & HWJ 연구)</h3>
+                            <p style="font-size: 17px;">
+                                ModSecurity의 정규표현식 기반 Rule을 회피하기 위해 `SCRIPT`, `ALERT` 등의 키워드를 **HTML Entity, URL, Unicode, Base64, Hex** 등 12가지 방식으로 중첩 난독화하여 자동 테스트합니다.
+                            </p>
+                            <ul style="font-size: 16px; margin-left: 25px; margin-top: 15px; line-height: 1.8;">
+                                <li>도구: `xss_tool3_edit.py`, `auto_redteam_blueteam_bypass.py`</li>
+                                <li>**HWJ 연구**: 느린 요청(3초 delay)으로 Fail2Ban의 Threshold 회피 시도.</li>
+                            </ul>
+                        </div>
+                        <div class="glass-card">
+                            <p style="color: #fca5a5; font-weight: 700;">난독화 및 우회 페이로드 예시</p>
+                            <div class="code-block" style="font-size: 13px;">
+                                <span class="string">%253c%2573%2563%2572%2569%2570%2574%253e</span> <span class="comment"># 다중 URL 인코딩</span><br>
+                                <span class="string">alert&#x28;1&#x29;</span> <span class="comment"># HTML Entity</span><br>
+                                <span class="function">time</span>.<span class="function">sleep</span>(3) <span class="comment"># Fail2Ban Rate Limiting 우회 시도</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">10/37</div>
+            </div>
+
+            <div class="slide" data-index="11">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 style="color: #fca5a5;">Red Team Detail: SSRF/LFI 자동 침투 (HWJ)</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-red">
+                            <h3 class="neon-red" style="margin-bottom: 15px;">AWS 메타데이터 서비스 엔드포인트 탐색</h3>
+                            <p style="font-size: 17px;">
+                                `file.php?url=` 파라미터와 같은 SSRF 취약점을 발견하면, **내부 네트워크 스캐닝**을 자동화하여 AWS IMDS v1 엔드포인트에 접근을 시도합니다.
+                            </p>
+                            <ul style="font-size: 16px; margin-left: 25px; margin-top: 15px;">
+                                <li>LFI/RFI: `../../../etc/passwd` 디렉터리 이동 시퀀스 테스트.</li>
+                                <li>**핵심**: SSRF를 통해 **169.254.169.254**에 접근 시도.</li>
+                            </ul>
+                        </div>
+                        <div class="image-placeholder">
+                            <img src="s11.png" alt="LFI 공격을 통해 /etc/passwd 파일 내용을 읽어낸 화면">
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">11/37</div>
+            </div>
+
+            <div class="slide" data-index="12">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 style="color: #fca5a5;">Red Team Detail: 클라우드 연계 공격 (AWS IMDS v1)</h2>
+                    <div class="glass-card glass-red" style="margin-bottom: 30px;">
+                        <h3 class="neon-red" style="margin-bottom: 15px;">공격 시나리오: SSRF → IAM Role Credential 탈취 (HWJ)</h3>
+                        <p style="font-size: 18px;">
+                            SSRF 취약점을 이용하여 AWS EC2 내부의 메타데이터 서비스(IMDS v1)에 접근, 인스턴스에 할당된 **IAM Role의 임시 보안 자격 증명(Credential)** 탈취를 자동화합니다. (Capital One Breach 공격 재현)
+                        </p>
+                    </div>
+                    <div class="code-block" style="font-size: 16px;">
+                        <span class="comment"># 120_aws_imds_exploit.py의 핵심 요청</span><br>
+                        <span class="function">IMDS_V1_PATH</span> = <span class="string">"http://169.254.169.254/latest/meta-data/iam/security-credentials/"</span><br>
+                        <span class="keyword">if</span> <span class="function">ssrf_success</span>:<br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;<span class="function">send_ssrf_request</span>(target_url, <span class="function">IMDS_V1_PATH</span>) <span class="comment"># IAM Role 이름 획득</span><br>
+                        &nbsp;&nbsp;&nbsp;&nbsp;... <span class="comment"># AccessKey, SecretKey, SessionToken 탈취 및 AWS CLI 장악</span>
+                    </div>
+                </div>
+                <div class="slide-footer">12/37</div>
+            </div>
+
+            <div class="slide" data-index="13">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 style="color: #fca5a5;">Red Team Detail: CSRF 공격 및 자동화 (HYE)</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-red">
+                            <h3 class="neon-red" style="margin-bottom: 15px;">포인트 전송 자동 공격 (CVSS 7.8)</h3>
+                            <p style="font-size: 17px;">
+                                Anti-CSRF 토큰이 미구현된 취약한 SNS 웹앱의 **포인트 전송 기능**을 타겟으로, 피해자의 권한을 이용해 공격자에게 **포인트를 자동 이체**하는 시나리오를 구현했습니다.
+                            </p>
+                            <ul style="font-size: 16px; margin-left: 25px; margin-top: 15px;">
+                                <li>도구: `1124_CSRF_Auto.py`</li>
+                                <li>**성공률**: 방어 미적용 시 75%</li>
+                            </ul>
+                        </div>
+                        <div class="image-placeholder">
+                            <img src="S13.webp" alt="CSRF 공격용으로 자동 생성된 HTML 폼">
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">13/37</div>
+            </div>
+
+            <div class="slide" data-index="14">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-red">Red Team Summary: 공격 자동화의 가치 (HWJ)</h2>
+                    <div class="glass-card glass-red" style="margin-bottom: 30px;">
+                        <h3 class="neon-red" style="margin-bottom: 15px;">RedChain: 고급 공격 시나리오 통합 플랫폼</h3>
+                        <p style="font-size: 20px;">
+                            `auto_redteam_ultimate.py`는 단순 취약점 스캐너가 아닌, <span class="highlight-red">**AWS 클라우드 연계, WAF 우회, 지속성 확보**</span>를 통합한 **자동화된 Red Teaming 플랫폼**으로, 보안 평가 시간 및 비용을 획기적으로 절감합니다.
+                        </p>
+                    </div>
+                    <div class="image-placeholder img-300">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">14/37</div>
+            </div>
+
+            <div class="slide" data-index="15">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 style="color: #fca5a5;">Red Team 시연 계획</h2>
+                    <div class="glass-card" style="margin-bottom: 30px;">
+                        <h3 style="color: #fca5a5; margin-bottom: 15px;">시연 목표: 공격의 신속성과 복잡성 입증</h3>
+                        <ul style="font-size: 20px; margin-left: 20px; line-height: 2;">
+                            <li>**시나리오 1**: 방어 체계 미적용 시, 5분 이내에 SSRF/IMDS를 통한 **IAM Credential 탈취** 성공.</li>
+                            <li>**시나리오 2**: Blue Team의 WAF 적용 상태에서 **WAF 우회 공격** 시도 및 느린 요청(Slow Attack) 테스트.</li>
+                        </ul>
+                    </div>
+                    <div style="font-size: 24px; text-align: center; color: #fca5a5; margin-top: 50px; padding: 20px; border: 3px solid #fca5a5;">
+                        **[시연] : `redchain.py` 실행 및 AWS S3 접근 시도**
+                    </div>
+                </div>
+                <div class="slide-footer">15/37</div>
+            </div>
+
+
+            <div class="slide" data-index="16">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">03. Blue Team: 실시간 대응 시스템 목표</h2>
+                    <div class="glass-card glass-blue" style="margin-bottom: 30px;">
+                        <h3 class="neon-blue" style="margin-bottom: 15px;">핵심 지표: MTTR (Mean Time To Respond) Zero화</h3>
+                        <p style="font-size: 20px; font-weight: 500;">
+                            Red Team의 모든 공격 시도를 <span class="highlight-blue">**100% 탐지**</span>하고, 공격 로그 발생 후 **평균 2초 이내**에 공격 IP를 자동 차단하여 **실질적인 MTTR을 제로**에 가깝게 만듭니다.
+                        </p>
+                    </div>
+                    <div class="image-placeholder img-300">
+                        <img src="S16.png" alt="MTTR 비교 차트">
+                    </div>
+                </div>
+                <div class="slide-footer">16/37</div>
+            </div>
+
+            <div class="slide" data-index="17">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">방어 아키텍처: 3단계 파이프라인 (완성도)</h2>
+                    <div class="grid-3" style="margin-top: 40px;">
+                        <div class="glass-card glass-blue">
+                            <h3 style="font-size: 24px;">Layer 1: Detection</h3>
+                            <p style="font-size: 18px; margin-top: 10px;">ModSecurity (WAF)</p>
+                            <p class="highlight-blue">공격 유입 차단 및 로그 생성</p>
+                        </div>
+                        <div class="glass-card glass-blue">
+                            <h3 style="font-size: 24px;">Layer 2: Analysis</h3>
+                            <p style="font-size: 18px; margin-top: 10px;">Splunk (SIEM)</p>
+                            <p class="highlight-blue">실시간 로그 수집, 위협 점수 분석</p>
+                        </div>
+                        <div class="glass-card glass-blue">
+                            <h3 style="font-size: 24px;">Layer 3: Response</h3>
+                            <p style="font-size: 18px; margin-top: 10px;">Fail2Ban (SOAR)</p>
+                            <p class="highlight-blue">공격 IP 자동 차단 및 Webhook 알림</p>
+                        </div>
+                    </div>
+                    <div class="image-placeholder img-250">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">17/37</div>
+            </div>
+            
+            <div class="slide" data-index="18">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">Layer 1 Detail: ModSecurity (WAF)</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-blue">
+                            <h3 class="neon-blue" style="margin-bottom: 15px;">OWASP CRS 기반 방어 (10년 이상 패턴 학습)</h3>
+                            <p style="font-size: 17px;">
+                                OWASP Core Rule Set(CRS) Level 2를 적용하여 주요 5대 취약점에 대한 기본적인 방어 프레임워크를 구축했습니다. **알려진 페이로드 100% 차단**의 기반입니다.
+                            </p>
+                            <ul style="font-size: 16px; margin-left: 25px; margin-top: 15px;">
+                                <li>SQLi: CRS Rule ID 942xxx</li>
+                                <li>XSS: CRS Rule ID 941xxx</li>
+                                <li>LFI/SSRF: CRS Rule ID 930xxx</li>
+                            </ul>
+                        </div>
+                        <div class="glass-card">
+                            <p style="color: #93c5fd; font-weight: 700;">ModSecurity 설정 파일</p>
+                            <div class="code-block" style="font-size: 13px;">
+                                <span class="keyword">SecRuleEngine</span> On<br>
+                                <span class="keyword">Include</span> conf/owasp-crs/crs-setup.conf<br>
+                                <span class="keyword">Include</span> conf/owasp-crs/rules/*.conf<br>
+                                <span class="keyword">Include</span> conf/custom_rules.conf <span class="comment"># 사용자 정의 룰 포함</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">18/37</div>
+            </div>
+
+            <div class="slide" data-index="19">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">Layer 1 Detail: Custom Rule 개발 및 전문성</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-blue">
+                            <h3 class="neon-blue" style="margin-bottom: 15px;">Red Team 우회 공격에 대한 대응</h3>
+                            <p style="font-size: 17px;">
+                                Red Team의 **12가지 WAF 우회 기술** 테스트 결과를 바탕으로, 디코딩 후에도 탐지할 수 있는 **Custom Rule(Rule ID 999xxx)**을 개발하여 전문적인 방어 능력을 강화했습니다. 특히 **Base64, Hex 인코딩** 후의 XSS 패턴을 추가 탐지합니다.
+                            </p>
+                        </div>
+                        <div class="glass-card">
+                            <p style="color: #93c5fd; font-weight: 700;">Custom XSS 방어 Rule 예시</p>
+                            <div class="code-block" style="font-size: 13px;">
+                                <span class="keyword">SecRule</span> ARGS <span class="string">"@rx [\w\W]*<script[\w\W]*src"</span> <span class="function">"phase:2,id:999001,deny,<br>
+                                &nbsp;&nbsp;&nbsp;&nbsp;msg:'XSS Obfuscation Attempt',severity:2"</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="image-placeholder img-180">
+                        <img src="S19.png" alt="ModSecurity Custom Rule 작동 로그">
+                    </div>
+                </div>
+                <div class="slide-footer">19/37</div>
+            </div>
+
+            <div class="slide" data-index="20">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">Layer 2 Detail: Splunk (SIEM) 통합</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-blue">
+                            <h3 class="neon-blue" style="margin-bottom: 15px;">로그 수집 및 정규화</h3>
+                            <p style="font-size: 17px;">
+                                ModSecurity의 Audit Log를 **Splunk Universal Forwarder**를 통해 실시간 수집하고, **Search Processing Language (SPL)**을 활용해 `Transaction ID`, `Rule ID`, `Source IP`를 추출하여 정규화했습니다.
+                            </p>
+                            <ul style="font-size: 16px; margin-left: 25px; margin-top: 15px;">
+                                <li>**S16.png**와 **0. XSS 공격.png** 등의 로그는 Splunk에 실시간 기록됩니다.</li>
+                            </ul>
+                        </div>
+                        <div class="image-placeholder img-300">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">20/37</div>
+            </div>
+            
+            <div class="slide" data-index="21">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">Layer 2 Detail: 위협 점수화 시스템 (Threat Scoring)</h2>
+                    <div class="glass-card glass-blue" style="margin-bottom: 30px;">
+                        <h3 class="neon-blue" style="margin-bottom: 15px;">단일 공격 vs 복합 공격 판단</h3>
+                        <p style="font-size: 18px;">
+                            단순 오탐이 아닌 실제 공격을 식별하기 위해 공격 유형별 **가중치**를 부여하고, **N분 동안 누적 점수**가 임계치(Threshold)를 초과할 경우 High-Risk로 분류하는 시스템을 SPL로 구현했습니다.
+                        </p>
+                    </div>
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th>공격 유형 (Rule ID)</th>
+                                <th>가중치 (Weight)</th>
+                                <th>임계치 (Threshold)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>SQLi / SSRF (Critical)</td>
+                                <td>+10점</td>
+                                <td rowspan="3">**20점 초과 시**<br>(Fail2Ban 자동 차단 트리거)</td>
+                            </tr>
+                            <tr>
+                                <td>XSS / CSRF (High)</td>
+                                <td>+5점</td>
+                            </tr>
+                            <tr>
+                                <td>WAF Bypass Attempt (Medium)</td>
+                                <td>+1점</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="slide-footer">21/37</div>
+            </div>
+
+            <div class="slide" data-index="22">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">Layer 2 Detail: Splunk 대시보드 및 가시성</h2>
+                    <div class="image-placeholder img-450">
+                        <img src="스크린샷 2025-12-01 오전 10.30.12.jpg" alt="Splunk SIEM 대시보드 화면">
+                    </div>
+                </div>
+                <div class="slide-footer">22/37</div>
+            </div>
+            
+            <div class="slide" data-index="23">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">Layer 3 Detail: SOAR (자동화된 대응)</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-blue">
+                            <h3 class="neon-blue" style="margin-bottom: 15px;">Fail2Ban 연동을 통한 IP 차단</h3>
+                            <p style="font-size: 17px;">
+                                ModSecurity의 로그를 Fail2Ban이 실시간 모니터링하여, **Threat Score** 임계치 이상 감지될 경우 **자동으로 방화벽(`iptables`)에 Drop Rule을 추가**하여 공격 IP를 네트워크 수준에서 차단합니다.
+                            </p>
+                            <p style="font-size: 17px; margin-top: 10px;">
+                                **MTTR 2초 이내**의 초고속 대응을 구현했습니다.
+                            </p>
+                        </div>
+                        <div class="image-placeholder img-300">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">23/37</div>
+            </div>
+
+            <div class="slide" data-index="24">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">Layer 3 Detail: Fail2Ban Custom Filter</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-blue">
+                            <h3 class="neon-blue" style="margin-bottom: 15px;">정확도 높은 `failregex` 개발</h3>
+                            <p style="font-size: 17px;">
+                                **CRS Rule ID와 Custom Rule ID(999xxx)**를 기반으로 하는 정규 표현식(`failregex`)을 작성하여 오탐을 최소화하고 Red Team의 High-Risk 공격만을 정확하게 차단합니다.
+                            </p>
+                            <ul style="font-size: 16px; margin-left: 25px; margin-top: 15px;">
+                                <li>**maxretry**: 3회 공격 시 (낮은 횟수로 신속 대응)</li>
+                                <li>**bantime**: 3600초 (1시간 차단)</li>
+                            </ul>
+                        </div>
+                        <div class="glass-card">
+                            <p style="color: #93c5fd; font-weight: 700;">Fail2Ban 설정 코드</p>
+                            <div class="code-block" style="font-size: 13px;">
+                                <span class="comment"># modsec_high_threat.conf (Filter)</span><br>
+                                <span class="keyword">failregex</span> = [modsecurity] ... <span class="string">"id:(942100|941100|930100|999001)"</span><br>
+                                <br>
+                                <span class="comment"># jail.local (Jail)</span><br>
+                                <span class="string">[modsec-waf]</span><br>
+                                <span class="keyword">enabled</span> = true<br>
+                                <span class="keyword">filter</span> = modsec_high_threat<br>
+                                <span class="keyword">maxretry</span> = 3<br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">24/37</div>
+            </div>
+
+            <div class="slide" data-index="25">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">Layer 3 Detail: 사고 대응 자동화 흐름</h2>
+                    <div class="image-placeholder img-450">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">25/37</div>
+            </div>
+
+            <div class="slide" data-index="26">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">Layer 3 Detail: 실시간 Webhook 알림</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-blue">
+                            <h3 class="neon-blue" style="margin-bottom: 15px;">Discord 연동 (Fail2Ban Action Script)</h3>
+                            <p style="font-size: 17px;">
+                                Fail2Ban이 공격 IP를 차단하는 **Action Script** 내에 **Webhook URL 호출 로직**을 추가하여, 차단 발생 즉시 담당자에게 알림을 전송합니다. **공격 유형별 로그**를 즉시 확인 가능합니다.
+                            </p>
+                            <ul style="font-size: 16px; margin-left: 25px; margin-top: 15px;">
+                                <li>전송 정보: 차단 IP, 차단 사유(Rule ID), 차단 시간</li>
+                            </ul>
+                        </div>
+                        <div style="padding-top: 20px;">
+                            <img src="0. XSS 공격.png" alt="Discord XSS 공격 차단 알림" style="height: 100px; margin-bottom: 5px;">
+                            <img src="2. HTTP 플러드 반복 403 요청 공격.png" alt="Discord HTTP 플러드 차단 알림" style="height: 100px; margin-bottom: 5px;">
+                            <img src="4. 워드프레스 경로 스캐닝 공격.png" alt="Discord 워드프레스 스캐닝 차단 알림" style="height: 100px;">
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">26/37</div>
+            </div>
+            
+            <div class="slide" data-index="27">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">Blue Team Summary: 지능형 방어 체계</h2>
+                    <div class="glass-card glass-blue" style="margin-bottom: 30px;">
+                        <h3 class="neon-blue" style="margin-bottom: 15px;">완성도 높은 방어 파이프라인</h3>
+                        <p style="font-size: 20px; font-weight: 500;">
+                            Red Team의 복합적인 공격을 **모두 탐지**하는 **전문적인 WAF Rule**과, 공격 발생 후 **2초 이내의 자동 대응**을 보장하는 **완성도 높은 SOAR 시스템**을 성공적으로 구축했습니다.
+                        </p>
+                    </div>
+                    <div style="font-size: 30px; text-align: center; margin-top: 50px; color: #93c5fd; font-weight: 700;">
+                        100% Detection Coverage & MTTR &le; 2 Seconds
+                    </div>
+                </div>
+                <div class="slide-footer">27/37</div>
+            </div>
+
+            <div class="slide" data-index="28">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-red">04. 실험 결과 분석: 대결 환경 설정</h2>
+                    <div class="glass-card" style="margin-bottom: 30px;">
+                        <h3 class="highlight-red" style="margin-bottom: 15px;">Red vs Blue 대결 조건</h3>
+                        <ul style="font-size: 18px; margin-left: 20px; line-height: 1.8;">
+                            <li>**공격 주체**: `auto_redteam_ultimate.py` (450+ 공격 시도)</li>
+                            <li>**방어 주체**: ModSecurity + Splunk + Fail2Ban (통합 아키텍처)</li>
+                            <li>**총 시나리오**: 5대 취약점 기본 공격 및 WAF 우회, **총 450+ 회**의 공격 트래픽 전송.</li>
+                            <li>**핵심 평가 지표**: Block Rate (차단율), Time to Exploit, MTTR.</li>
+                        </ul>
+                    </div>
+                    <div class="image-placeholder img-180">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">28/37</div>
+            </div>
+
+            <div class="slide" data-index="29">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-red">정량적 실험 결과 요약</h2>
+                    <table class="cyber-table">
+                        <thead>
+                            <tr>
+                                <th>지표</th>
+                                <th>Red Team 성과</th>
+                                <th>Blue Team 성과</th>
+                                <th>평가</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>**공격 성공률**</td>
+                                <td>**0%** (알려진 247건 공격 시도 방어 우회 실패)</td>
+                                <td>**100% 차단 성공** (Block Rate)</td>
+                                <td>완성도 (A)</td>
+                            </tr>
+                            <tr>
+                                <td>**공격 효율성**</td>
+                                <td>수동 대비 <span class="highlight-red">**92% 시간 단축**</span> (5분 내 스캔 완료)</td>
+                                <td>해당 없음</td>
+                                <td>차별성 (A)</td>
+                            </tr>
+                            <tr>
+                                <td>**대응 시간 (MTTR)**</td>
+                                <td>해당 없음</td>
+                                <td>공격 감지 후 IP 차단까지 <span class="highlight-blue">**평균 2초 이내**</span></td>
+                                <td>차별성 / 완성도 (A)</td>
+                            </tr>
+                            <tr>
+                                <td>**로그/경보**</td>
+                                <td>450+ 공격 로그 자동 기록</td>
+                                <td>모두 Splunk 기록 및 Fail2Ban 차단 경보 발생</td>
+                                <td>전문성 (A)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="slide-footer">29/37</div>
+            </div>
+
+            <div class="slide" data-index="30">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-red">결과 상세: 100% Block Rate 입증</h2>
+                    <div class="image-placeholder img-450">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">30/37</div>
+            </div>
+
+            <div class="slide" data-index="31">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">결과 상세: MTTR (대응 시간) 혁신</h2>
+                    <div class="grid-2" style="margin-top: 40px;">
+                        <div class="glass-card glass-blue">
+                            <h3 class="neon-blue" style="margin-bottom: 15px;">기존 수동 대응</h3>
+                            <p style="font-size: 18px;">
+                                로그 분석(3분) + 담당자 확인(5분) + 방화벽 수동 등록(2분) = **총 MTTR 10분 이상**
+                            </p>
+                        </div>
+                        <div class="glass-card glass-red">
+                            <h3 class="neon-red" style="margin-bottom: 15px;">자동 대응 (SOAR)</h3>
+                            <p style="font-size: 18px;">
+                                로그 수집 및 분석(1초) + Fail2Ban 차단(1초) = **총 MTTR 2초 이내**
+                            </p>
+                        </div>
+                    </div>
+                    <div class="image-placeholder img-250">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">31/37</div>
+            </div>
+
+            <div class="slide" data-index="32">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">분석: Blue Team 성공 요인 (전문성)</h2>
+                    <div class="glass-card glass-blue">
+                        <h3 class="neon-blue" style="margin-bottom: 15px;">핵심 성공 요인 3가지</h3>
+                        <ul style="font-size: 20px; margin-left: 20px; line-height: 2;">
+                            <li>**정교한 탐지(WAF)**: Red Team의 12가지 난독화에 대응하는 <span class="highlight-blue">**Custom WAF Rule(999xxx)**</span> 개발.</li>
+                            <li>**지능형 분석(SIEM)**: 단일 공격이 아닌 누적된 위협에 반응하는 <span class="highlight-blue">**Threat Scoring System**</span> 적용.</li>
+                            <li>**즉각적 차단(SOAR)**: 로그-정규화-차단까지의 모든 단계를 <span class="highlight-blue">**논리적인 파이프라인**</span>으로 연결하여 대응 지연 요소 완벽 제거.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="slide-footer">32/37</div>
+            </div>
+
+            <div class="slide" data-index="33">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-red">분석: Red Team의 기여 (차별성)</h2>
+                    <div class="glass-card glass-red">
+                        <h3 class="neon-red" style="margin-bottom: 15px;">자동화된 공격의 진정한 가치</h3>
+                        <p style="font-size: 20px;">
+                            Red Team의 **빠르고 복합적인 자동 공격**이 없었다면, Blue Team은 100% Block Rate를 달성할 수 없었습니다.
+                        </p>
+                        <ul style="font-size: 18px; margin-left: 20px; margin-top: 15px; line-height: 1.8;">
+                            <li>**방어 허점 신속 노출**: 수동 테스트로 발견하기 어려운 <span class="highlight-red">**WAF 디코딩 오류**</span> 및 Rule 미흡점을 즉시 파악.</li>
+                            <li>**대응 훈련 환경 제공**: 실제와 같은 대규모 공격 시나리오를 Blue Team에게 제공하여 <span class="highlight-red">**자동 대응 체계의 안정성**</span>을 검증.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="slide-footer">33/37</div>
+            </div>
+
+            <div class="slide" data-index="34">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">프로젝트 기여 요약 (평가 기준 만족)</h2>
+                    <div class="grid-3" style="margin-top: 40px;">
+                        <div class="glass-card glass-blue">
+                            <h3>전문성</h3>
+                            <p>Custom Rule & Threat Scoring 적용</p>
+                            <p class="highlight-blue">보안 원리 기반의 기술적 정확성 확보</p>
+                        </div>
+                        <div class="glass-card glass-blue">
+                            <h3>차별성</h3>
+                            <p>공격 자동화(92%) vs 대응 자동화(MTTR 2초)</p>
+                            <p class="highlight-blue">대응 속도에 대한 실질적인 혁신 제시</p>
+                        </div>
+                        <div class="glass-card glass-blue">
+                            <h3>완성도</h3>
+                            <p>WAF-SIEM-SOAR 유기적 100% 작동</p>
+                            <p class="highlight-blue">논리적이고 안정적인 시스템 구조</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="slide-footer">34/37</div>
+            </div>
+
+            <div class="slide" data-index="35">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-red">향후 계획: Red Team 고도화</h2>
+                    <div class="glass-card glass-red" style="margin-bottom: 30px;">
+                        <h3 class="neon-red" style="margin-bottom: 15px;">Advanced Persistent Threat (APT) 시나리오 추가</h3>
+                        <ul style="font-size: 20px; margin-left: 20px; line-height: 2;">
+                            <li>**EDR/XDR 우회**: 파일리스(Fileless) 공격 기법 및 인메모리(In-Memory) 실행 모듈 개발.</li>
+                            <li>**Lateral Movement**: 초기 침투 성공 후 내부 네트워크에서 권한을 확장하는 자동화된 횡적 이동 모듈 추가.</li>
+                        </ul>
+                    </div>
+                    <div class="image-placeholder img-180">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">35/37</div>
+            </div>
+
+            <div class="slide" data-index="36">
+                <div class="cyber-grid"></div>
+                <div class="content">
+                    <h2 class="neon-blue">향후 계획: Blue Team 고도화</h2>
+                    <div class="glass-card glass-blue" style="margin-bottom: 30px;">
+                        <h3 class="neon-blue" style="margin-bottom: 15px;">AI/ML 기반 이상 징후 탐지 도입</h3>
+                        <ul style="font-size: 20px; margin-left: 20px; line-height: 2;">
+                            <li>**오탐(False Positive) 감소**: Splunk 데이터 기반으로 정상 사용자 행위 모델을 학습시켜 오탐율을 획기적으로 낮추는 ML 모델 개발.</li>
+                            <li>**클라우드 SOAR 확장**: AWS Lambda/Azure Function을 활용하여 <span class="highlight-blue">**네트워크 ACL 및 IAM Policy를 자동 수정**</span>하는 클라우드 네이티브 SOAR 구현.</li>
+                        </ul>
+                    </div>
+                    <div class="image-placeholder img-180">
+                        
+                    </div>
+                </div>
+                <div class="slide-footer">36/37</div>
+            </div>
+
+            <div class="slide" data-index="37">
+                <div class="cyber-grid"></div>
+                <div class="content" style="text-align: center; padding-top: 200px;">
+                    <h1 style="font-size: 60px; margin-bottom: 40px;" class="neon-blue">
+                        Thank You
+                    </h1>
+                    <h2 style="font-size: 36px; color: #fca5a5; border: none;">
+                        Q & A
+                    </h2>
+                    <p style="font-size: 22px; color: #475569; margin-top: 20px;">
+                        발표자: **황준하** | 팀명: **Anonymous**
+                    </p>
+                </div>
+                <div class="slide-footer">37/37</div>
+            </div>
+            
+        </div>
+    </div>
+
+    <script>
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        let currentSlide = 0;
+
+        function showSlide(index) {
+            if (index < 0) {
+                index = 0;
+            } else if (index >= totalSlides) {
+                index = totalSlides - 1;
+            }
+
+            slides.forEach((slide, i) => {
+                slide.style.display = 'none';
+                if (i === index) {
+                    slide.style.display = 'block';
+                }
+            });
+            
+            currentSlide = index;
+        }
+        
+        function nextSlide() {
+            showSlide(currentSlide + 1);
+        }
+        
+        function previousSlide() {
+            showSlide(currentSlide - 1);
+        }
+        
+        function toggleFullscreen() {
+            if (document.fullscreenElement) {
+                document.exitFullscreen();
+            } else {
+                document.documentElement.requestFullscreen();
+            }
+        }
+        
+        showSlide(0);
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                e.preventDefault();
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                e.preventDefault();
+                previousSlide();
+            } else if (e.key === 'f' || e.key === 'F') {
+                toggleFullscreen();
+            } else if (e.key === 'Home') {
+                showSlide(0);
+            } else if (e.key === 'End') {
+                showSlide(totalSlides - 1);
+            }
+        });
+        
+        let wheelTimeout;
+        document.addEventListener('wheel', function(e) {
+            clearTimeout(wheelTimeout);
+            wheelTimeout = setTimeout(function() {
+                if (e.deltaY > 0) {
+                    nextSlide();
+                } else if (e.deltaY < 0) {
+                    previousSlide();
+                }
+            }, 100);
+        }, { passive: true });
+    </script>
+</body>
+</html>
